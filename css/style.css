@@ -1,9 +1,38 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
+:root {
+  --sk-red: #EA0029;
+  --sk-orange: #FF6A00;
+  --sk-gradient: linear-gradient(135deg, #EA0029 0%, #FF6A00 100%);
+  --sk-dark: #0F172A;
+}
+
 body {
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #F8FAFC;
+}
+
+/* SK hynix 브랜드 그라디언트 유틸리티 */
+.bg-sk-gradient {
+  background: linear-gradient(135deg, #EA0029 0%, #FF6A00 100%);
+}
+.text-sk-gradient {
+  background: linear-gradient(135deg, #EA0029 0%, #FF6A00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.border-sk-gradient {
+  border-image: linear-gradient(135deg, #EA0029, #FF6A00) 1;
+}
+
+/* 하이테크 글래스모피즘 */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 /* 커스텀 스크롤바 */
@@ -19,7 +48,7 @@ body {
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #EA0029;
 }
 
 /* 한글 단어 끊김 방지 */
@@ -28,45 +57,59 @@ body {
   overflow-wrap: break-word;
 }
 
-/* 리사이즈 핸들 스타일링 */
+/* ========================================================================= */
+/* 리사이즈 핸들 스타일링 (양 끝 드래그 극대화)                                */
+/* ========================================================================= */
 .resize-handle {
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
+  transition: background-color 0.15s ease;
 }
 
 .resize-handle .handle-bar {
-  opacity: 0.4;
-  transition: all 0.15s ease-in-out;
+  opacity: 0.5;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #94a3b8;
 }
 
+/* 카드에 마우스 호버 시 손잡이 바 강조 */
 .task-card:hover .resize-handle .handle-bar {
-  opacity: 0.9;
-  background-color: #3b82f6;
-  width: 44px;
+  opacity: 0.85;
+  background-color: #EA0029;
+  width: 48px;
+  height: 4px;
+}
+
+/* 손잡이에 직접 마우스 호버 시 화려한 발광 효과 */
+.resize-handle:hover {
+  background-color: rgba(234, 0, 41, 0.08);
 }
 
 .resize-handle:hover .handle-bar {
   opacity: 1;
-  background-color: #1d4ed8;
+  background: linear-gradient(90deg, #EA0029, #FF6A00);
   height: 5px;
-  width: 52px;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  width: 60px;
+  box-shadow: 0 0 10px rgba(234, 0, 41, 0.5);
 }
 
-/* 카드 드래그 시 반응 */
+/* ========================================================================= */
+/* 카드 드래그 & 인터랙션                                                    */
+/* ========================================================================= */
 .task-card {
   user-select: none;
   -webkit-user-select: none;
-  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+  position: absolute;
 }
 
 .task-card:hover {
-  border-color: rgba(59, 130, 246, 0.5) !important;
+  border-color: rgba(234, 0, 41, 0.5) !important;
 }
 
 .task-card:active {
-  cursor: grabbing;
+  cursor: grabbing !important;
 }
 
 /* 라인 클램프 */
@@ -90,25 +133,38 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: #3b82f6;
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+  background: linear-gradient(90deg, #EA0029, #FF6A00);
+  box-shadow: 0 0 8px rgba(234, 0, 41, 0.7);
   z-index: 45;
   pointer-events-none;
 }
 
-/* 실시간 현재 시간 표시선 */
+/* 실시간 현재 시간 표시선 (SK Red) */
 .current-time-line {
   position: absolute;
   left: 0;
   right: 0;
   height: 2px;
-  background: #ef4444;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  background: #EA0029;
+  box-shadow: 0 0 10px rgba(234, 0, 41, 0.8);
   z-index: 35;
   pointer-events-none;
 }
 
-/* 부드러운 애니메이션 */
+/* 펄스 애니메이션 */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(234, 0, 41, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(234, 0, 41, 0);
+  }
+}
+.pulse-sk {
+  animation: pulseGlow 2s infinite;
+}
+
+/* 부드러운 페이드인 */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -120,5 +176,5 @@ body {
   }
 }
 .animate-fade-in {
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

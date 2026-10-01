@@ -295,21 +295,21 @@ const TimetableGrid = (function () {
       <!-- 좌측 포인트 컬러 바 -->
       <div class="absolute left-0 top-0 bottom-0 w-2 ${catConfig.bar}"></div>
 
-      <!-- 상단 리사이즈 핸들 (넓은 터치 영역 & 중앙 손잡이 바) -->
+      <!-- 상단 리사이즈 핸들 (20px 내부 터치 영역 & 중앙 손잡이 바) -->
       ${!isReadOnly ? `
-        <div class="resize-handle top-handle absolute -top-2 left-0 right-0 h-4 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-8 h-1 rounded-full bg-slate-400"></div>
+        <div class="resize-handle top-handle absolute top-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
+          <div class="handle-bar w-12 h-1.5 rounded-full bg-slate-400/80"></div>
         </div>
       ` : ''}
 
       <!-- 헤더: 시간 + 소요시간 + 카테고리 -->
-      <div class="flex items-center justify-between gap-1.5 pl-1.5 flex-shrink-0">
+      <div class="flex items-center justify-between gap-1.5 pl-1.5 pt-1.5 flex-shrink-0">
         <div class="flex items-center gap-1.5">
           <span class="text-[11px] font-bold font-mono tracking-tight text-slate-800 flex items-center gap-1">
-            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             ${task.start_time} - ${task.end_time}
           </span>
-          <span class="text-[10px] font-medium text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200/80">
+          <span class="text-[10px] font-medium text-slate-600 bg-white/90 px-1.5 py-0.2 rounded border border-slate-200/90 shadow-2xs">
             ${durationText}
           </span>
         </div>
@@ -317,7 +317,7 @@ const TimetableGrid = (function () {
       </div>
 
       <!-- 본문: Task 제목 (가독성 극대화, break-keep, 최대 2줄) -->
-      <div class="pl-1.5 flex-1 min-h-0 flex flex-col justify-center">
+      <div class="pl-1.5 flex-1 min-h-0 flex flex-col justify-center my-0.5">
         <div class="font-extrabold text-xs sm:text-[13px] text-slate-900 leading-snug line-clamp-2 break-keep">
           ${escapeHtml(task.task || "제목 없는 일정")}
         </div>
@@ -332,7 +332,7 @@ const TimetableGrid = (function () {
     // 하단부: 특이사항 (etc) 표시
     if (!isShort && task.etc) {
       innerContent += `
-        <div class="pl-1.5 pt-0.5 flex items-center gap-1 flex-shrink-0">
+        <div class="pl-1.5 pb-1 flex items-center gap-1 flex-shrink-0">
           <span class="text-[10px] font-medium bg-white/95 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/90 truncate max-w-full shadow-2xs">
             📍 ${escapeHtml(task.etc)}
           </span>
@@ -340,11 +340,11 @@ const TimetableGrid = (function () {
       `;
     }
 
-    // 하단 리사이즈 핸들
+    // 하단 리사이즈 핸들 (20px 내부 터치 영역 & 중앙 손잡이 바)
     if (!isReadOnly) {
       innerContent += `
-        <div class="resize-handle bottom-handle absolute -bottom-2 left-0 right-0 h-4 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-8 h-1 rounded-full bg-slate-400"></div>
+        <div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
+          <div class="handle-bar w-12 h-1.5 rounded-full bg-slate-400/80"></div>
         </div>
       `;
     }
@@ -435,6 +435,7 @@ const TimetableGrid = (function () {
     function onPointerDown(e, dragMode) {
       if (e.button !== 0) return; // 좌클릭만
       e.stopPropagation();
+      e.preventDefault();
 
       isInteracting = true;
       mode = dragMode;
@@ -445,9 +446,14 @@ const TimetableGrid = (function () {
       initialStartM = task._startM;
       initialEndM = task._endM;
 
-      card.classList.add("ring-2", "ring-blue-500", "shadow-xl", "opacity-95");
+      card.classList.add("ring-2", "ring-[#EA0029]", "shadow-2xl", "opacity-95");
       card.style.zIndex = "50";
       document.body.style.cursor = dragMode === "move" ? "grabbing" : "row-resize";
+
+      // 포인터 캡처 (마우스가 카드 밖으로 빠르게 벗어나도 완벽히 추적)
+      if (e.target && e.target.setPointerCapture) {
+        try { e.target.setPointerCapture(e.pointerId); } catch(err) {}
+      }
 
       document.addEventListener("pointermove", onPointerMove);
       document.addEventListener("pointerup", onPointerUp);
@@ -498,7 +504,11 @@ const TimetableGrid = (function () {
       document.body.style.cursor = "";
       removeTooltipAndGuide();
 
-      card.classList.remove("ring-2", "ring-blue-500", "shadow-xl", "opacity-95");
+      if (e.target && e.target.releasePointerCapture) {
+        try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
+      }
+
+      card.classList.remove("ring-2", "ring-[#EA0029]", "shadow-2xl", "opacity-95");
 
       const deltaY = e.clientY - startY;
       const deltaMinutes = snapMinutes(deltaY / pxPerMinute);

@@ -246,14 +246,14 @@
       const tab = document.createElement("button");
       tab.className = `group flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
         isActive
-          ? "bg-white text-blue-600 shadow-sm border border-slate-200/80 ring-2 ring-blue-500/10"
+          ? "bg-white text-[#EA0029] shadow-xs border border-slate-200/90 ring-2 ring-[#EA0029]/20 font-bold"
           : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
       }`;
 
       // 상태 아이콘 & 뱃지
       const statusIcon = isCompleted
         ? `<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>`
-        : `<span class="h-2 w-2 rounded-full bg-amber-400"></span>`;
+        : `<span class="h-2 w-2 rounded-full bg-[#EA0029]"></span>`;
 
       const taskCount = (sheet.data || []).length;
 
@@ -263,7 +263,7 @@
           <span class="truncate max-w-[120px]">👤 ${escapeHtml(sheet.sheetName)}</span>
         </div>
         <span class="px-1.5 py-0.2 rounded-md text-[11px] font-mono ${
-          isActive ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-500"
+          isActive ? "bg-rose-50 text-[#EA0029] font-bold" : "bg-slate-100 text-slate-500"
         }">${taskCount}</span>
       `;
 
@@ -287,10 +287,10 @@
     const isCompleted = sheet.status === "completed";
 
     if (isCompleted) {
-      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300";
+      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs";
       elements.personStatusBadge.innerHTML = `
         <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-        <span>수정 완료 (확정됨)</span>
+        <span>확정 완료 (timetable_fixed 동기화됨)</span>
       `;
 
       elements.toggleCompleteBtn.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200";
@@ -299,16 +299,16 @@
         <span>다시 수정하기</span>
       `;
     } else {
-      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300";
+      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs";
       elements.personStatusBadge.innerHTML = `
-        <svg class="w-3.5 h-3.5 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        <span class="w-2 h-2 rounded-full bg-[#EA0029] animate-pulse"></span>
         <span>수정 진행 중 (Draft)</span>
       `;
 
-      elements.toggleCompleteBtn.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-sm transition-all";
+      elements.toggleCompleteBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-md shadow-[#EA0029]/25 hover:shadow-lg hover:shadow-[#EA0029]/35 transition-all transform hover:-translate-y-0.5";
       elements.toggleCompleteBtn.innerHTML = `
         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-        <span>${escapeHtml(sheet.sheetName)} 님 수정 완료 (확정)</span>
+        <span>${escapeHtml(sheet.sheetName)} 님 일정 확정 (timetable_fixed 동기화)</span>
       `;
     }
   }
@@ -389,22 +389,43 @@
   }
 
   /**
-   * 개인별 수정 완료 상태 토글 (완료 <-> 수정 중)
+   * 개인별 수정 완료 상태 토글 & timetable_fixed 즉시 실시간 동기화
    */
-  function toggleActiveSheetStatus() {
+  async function toggleActiveSheetStatus() {
     const sheet = getActiveSheet();
     if (!sheet) return;
 
     if (sheet.status === "completed") {
       sheet.status = "draft";
+      SheetsApi.saveLocalData({ currentDate: state.currentDate, sheets: state.sheets });
+      renderAll();
       showToast(`${sheet.sheetName} 님의 시간표를 다시 수정 모드로 전환했습니다.`, "info");
-    } else {
-      sheet.status = "completed";
-      showToast(`✓ ${sheet.sheetName} 님의 시간표 수정이 완료(확정)되었습니다!`, "success");
+      return;
     }
 
+    // 1. 상태를 '완료(completed)'로 변경 후 로컬 백업
+    sheet.status = "completed";
     SheetsApi.saveLocalData({ currentDate: state.currentDate, sheets: state.sheets });
     renderAll();
+
+    // 2. 버튼 로딩 상태 표시
+    elements.toggleCompleteBtn.disabled = true;
+    elements.toggleCompleteBtn.innerHTML = `
+      <svg class="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+      <span>timetable_fixed에 실시간 저장 중...</span>
+    `;
+
+    // 3. timetable_fixed 스프레드시트에 즉시 전송 & 동기화
+    try {
+      const res = await SheetsApi.saveFixedData(state.sheets);
+      showToast(`✓ ${sheet.sheetName} 님의 일정이 확정되어 timetable_fixed 구글 시트에 즉시 반영되었습니다!`, "success", 4500);
+    } catch (e) {
+      console.error(e);
+      showToast(`timetable_fixed 자동 저장 실패: ${e.message}`, "error", 4500);
+    } finally {
+      elements.toggleCompleteBtn.disabled = false;
+      renderAll();
+    }
   }
 
   /**
