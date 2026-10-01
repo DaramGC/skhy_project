@@ -159,7 +159,7 @@ const TimetableGrid = (function () {
 
     // 1. 좌측 시간 라벨 컬럼 (상단 TOP_PADDING 적용으로 08:00 상단 여백 완벽 확보)
     const timeColumn = document.createElement("div");
-    timeColumn.className = "w-24 sm:w-28 flex-shrink-0 border-r border-slate-200/90 bg-slate-50/60 relative";
+    timeColumn.className = "w-24 sm:w-28 flex-shrink-0 border-r border-slate-300 bg-slate-50/70 relative";
     timeColumn.style.height = `${TOTAL_HOURS * hourHeight + TOP_PADDING + 28}px`;
 
     for (let h = START_HOUR; h <= END_HOUR; h++) {
@@ -169,11 +169,11 @@ const TimetableGrid = (function () {
       hourDiv.style.top = `${topPos}px`;
       
       hourDiv.innerHTML = `
-        <div class="flex flex-col items-center bg-white px-2.5 sm:px-3 py-1 rounded-lg border border-slate-200/90 text-slate-800 shadow-2xs hover:border-[#EA0029]/50 transition-colors">
+        <div class="flex flex-col items-center bg-white px-2.5 sm:px-3 py-1 rounded-lg border border-slate-300 text-slate-800 shadow-2xs hover:border-[#EA0029]/50 transition-colors">
           <span class="text-xs sm:text-[13px] font-mono-code font-extrabold tracking-tight text-slate-900">
             ${String(h).padStart(2, "0")}:00
           </span>
-          <span class="text-[9px] font-mono-code text-slate-400 font-semibold tracking-tight -mt-0.5">
+          <span class="text-[9px] font-mono-code text-slate-500 font-semibold tracking-tight -mt-0.5">
             ${h < 12 ? 'AM' : 'PM'}
           </span>
         </div>
@@ -188,19 +188,23 @@ const TimetableGrid = (function () {
     scheduleBody.className = "relative flex-1 bg-white";
     scheduleBody.style.height = `${TOTAL_HOURS * hourHeight + TOP_PADDING + 28}px`;
 
-    // 배경 그리드 가이드라인 (1시간 실선, 30분 점선)
+    // 배경 그리드 가이드라인 (진하고 선명한 1시간 실선, 30분 점선)
     for (let h = START_HOUR; h < END_HOUR; h++) {
       const rowTop = (h - START_HOUR) * hourHeight + TOP_PADDING;
       const hourRow = document.createElement("div");
       hourRow.style.top = `${rowTop}px`;
       hourRow.style.height = `${hourHeight}px`;
-      hourRow.className = "absolute left-0 right-0 border-b border-slate-100/90 relative group cursor-pointer hover:bg-slate-50/70 transition-colors";
+      hourRow.className = "absolute left-0 right-0 border-b border-slate-300 relative group cursor-pointer hover:bg-slate-50/80 transition-colors";
       hourRow.dataset.hour = h;
 
-      // 30분 구분선
+      if (h === START_HOUR) {
+        hourRow.classList.add("border-t", "border-slate-300");
+      }
+
+      // 30분 구분선 (선명한 점선)
       const halfHourLine = document.createElement("div");
       halfHourLine.style.top = `${hourHeight / 2}px`;
-      halfHourLine.className = "absolute left-0 right-0 border-b border-dashed border-slate-100/80 pointer-events-none";
+      halfHourLine.className = "absolute left-0 right-0 border-b border-dashed border-slate-200 pointer-events-none";
       hourRow.appendChild(halfHourLine);
 
       // 빈 그리드 클릭 시 신규 일정 생성 이벤트
