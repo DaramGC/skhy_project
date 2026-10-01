@@ -156,18 +156,23 @@ const TimetableGrid = (function () {
     const gridWrapper = document.createElement("div");
     gridWrapper.className = "relative flex w-full select-none bg-[#090D16] rounded-2xl shadow-2xl border border-slate-800/90 overflow-hidden";
 
-    // 1. 좌측 시간 라벨 컬럼
+    // 1. 좌측 시간 라벨 컬럼 (더 크고 선명한 사이버 HUD 폰트)
     const timeColumn = document.createElement("div");
-    timeColumn.className = "w-18 sm:w-20 flex-shrink-0 border-r border-slate-800/80 bg-[#060910] flex flex-col py-4";
+    timeColumn.className = "w-24 sm:w-28 flex-shrink-0 border-r border-slate-800/80 bg-[#060910] flex flex-col py-4";
 
     for (let h = START_HOUR; h <= END_HOUR; h++) {
       const hourDiv = document.createElement("div");
       hourDiv.style.height = `${hourHeight}px`;
       hourDiv.className = "relative flex items-start justify-center text-xs font-semibold text-slate-500";
       hourDiv.innerHTML = `
-        <span class="-mt-3 bg-[#101726] px-2 py-0.5 rounded-md border border-slate-700/80 text-[11px] font-mono-cyber font-bold tracking-tight text-amber-400 shadow-xs">
-          ${String(h).padStart(2, "0")}:00
-        </span>
+        <div class="-mt-3.5 flex flex-col items-center bg-[#0F1523] px-2.5 sm:px-3 py-1 rounded-lg border border-amber-500/35 text-amber-300 shadow-[0_0_10px_rgba(255,230,0,0.12)] hover:border-amber-400 transition-colors">
+          <span class="text-xs sm:text-sm font-mono-cyber font-extrabold tracking-wider text-[#FFE600] drop-shadow-xs">
+            ${String(h).padStart(2, "0")}:00
+          </span>
+          <span class="text-[9px] font-mono-cyber text-slate-400 font-bold tracking-tight -mt-0.5">
+            ${h < 12 ? 'AM' : 'PM'}
+          </span>
+        </div>
       `;
       timeColumn.appendChild(hourDiv);
     }
