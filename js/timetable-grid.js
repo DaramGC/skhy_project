@@ -435,6 +435,8 @@ const TimetableGrid = (function () {
     let initialHeight = 0;
     let initialStartM = task._startM;
     let initialEndM = task._endM;
+    let currentWorkingStartM = task._startM;
+    let currentWorkingEndM = task._endM;
 
     // 모바일 롱프레스 타이머 (220ms 누르면 드래그 활성화)
     let longPressTimer = null;
@@ -481,13 +483,17 @@ const TimetableGrid = (function () {
       isInteracting = true;
       mode = dragMode;
       startY = e.clientY;
+      startX = e.clientX;
 
-      initialTop = parseFloat(card.style.top);
-      initialHeight = parseFloat(card.style.height);
       initialStartM = task._startM;
       initialEndM = task._endM;
+      currentWorkingStartM = initialStartM;
+      currentWorkingEndM = initialEndM;
 
-      card.classList.add("ring-2", "ring-[#EA0029]", "shadow-2xl", "scale-[1.02]", "opacity-95");
+      initialTop = (initialStartM - startGridM) * pxPerMinute + TOP_PADDING;
+      initialHeight = Math.max(46, (initialEndM - initialStartM) * pxPerMinute);
+
+      card.classList.add("is-dragging", "ring-2", "ring-[#EA0029]", "shadow-2xl", "scale-[1.02]", "opacity-95");
       card.style.zIndex = "50";
       document.body.style.cursor = dragMode === "move" ? "grabbing" : "row-resize";
 
@@ -549,7 +555,9 @@ const TimetableGrid = (function () {
       // 롱프레스 대기 중 손가락이 8px 이상 움직이면 -> 스크롤 제스처로 판단하여 롱프레스 취소
       if (!isInteracting) {
         if (longPressTimer) {
-          const moveDist = Math.hypot(e.clientX - startX, e.clientY - startY);
+          const clientX = e.clientX != null ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : startX);
+          const clientY = e.clientY != null ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : startY);
+          const moveDist = Math.hypot(clientX - startX, clientY - startY);
           if (moveDist > 8) {
             clearTimeout(longPressTimer);
             longPressTimer = null;
@@ -564,7 +572,15 @@ const TimetableGrid = (function () {
       }
       card.dataset.dragged = "true";
 
-      const deltaY = e.clientY - startY;
+      const clientY = e.clientY != null ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : null);
+      const clientX = e.clientX != null ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : startX);
+      
+      // 모바일 터치 이벤트에서 clientY가 비정상적인 값인 경우 스킵
+      if (clientY === null || (e.pointerType === "touch" && clientY <= 0)) {
+        return;
+      }
+
+      const deltaY = clientY - startY;
       const deltaMinutesRaw = deltaY / pxPerMinute;
       const deltaMinutes = snapMinutes(deltaMinutesRaw);
 
@@ -593,8 +609,11 @@ const TimetableGrid = (function () {
         showGuideLine(newTop);
       }
 
+      currentWorkingStartM = newStartM;
+      currentWorkingEndM = newEndM;
+
       const durText = formatDurationText(newStartM, newEndM);
-      showTooltip(`⏱️ ${minutesToTime(newStartM)} ~ ${minutesToTime(newEndM)} (${durText})`, e.clientX, e.clientY);
+      showTooltip(`⏱️ ${minutesToTime(newStartM)} ~ ${minutesToTime(newEndM)} (${durText})`, clientX, clientY);
     }
 
     function onPointerUp(e) {
@@ -616,23 +635,10 @@ const TimetableGrid = (function () {
         try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
       }
 
-      card.classList.remove("ring-2", "ring-[#EA0029]", "shadow-2xl", "scale-[1.02]", "opacity-95");
+      card.classList.remove("is-dragging", "ring-2", "ring-[#EA0029]", "shadow-2xl", "scale-[1.02]", "opacity-95");
 
-      const deltaY = e.clientY - startY;
-      const deltaMinutes = snapMinutes(deltaY / pxPerMinute);
-
-      let newStartM = initialStartM;
-      let newEndM = initialEndM;
-
-      if (mode === "move") {
-        const duration = initialEndM - initialStartM;
-        newStartM = Math.max(START_HOUR * 60, Math.min(END_HOUR * 60 - duration, initialStartM + deltaMinutes));
-        newEndM = newStartM + duration;
-      } else if (mode === "resize-bottom") {
-        newEndM = Math.max(initialStartM + SNAP_MINUTES, Math.min(END_HOUR * 60, initialEndM + deltaMinutes));
-      } else if (mode === "resize-top") {
-        newStartM = Math.max(START_HOUR * 60, Math.min(initialEndM - SNAP_MINUTES, initialStartM + deltaMinutes));
-      }
+      const newStartM = currentWorkingStartM;
+      const newEndM = currentWorkingEndM;
 
       // 변경 사항이 실제로 있을 때만 콜백 호출
       if (newStartM !== initialStartM || newEndM !== initialEndM) {
