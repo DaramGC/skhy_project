@@ -421,7 +421,7 @@ const TimetableGrid = (function () {
   }
 
   /**
-   * 카드 드래그 이동 및 상/하단 리사이징 이벤트 바인딩
+   * 카드 드래그 이동 및 상/하단 리사이징 이벤트 바인딩 (모바일 롱프레스 & PC 즉시 드래그)
    */
   function bindDragAndResize(card, task, startGridM, scheduleBody) {
     const topHandle = card.querySelector(".top-handle");
@@ -429,11 +429,16 @@ const TimetableGrid = (function () {
 
     let isInteracting = false;
     let mode = null; // 'move' | 'resize-top' | 'resize-bottom'
+    let startX = 0;
     let startY = 0;
     let initialTop = 0;
     let initialHeight = 0;
     let initialStartM = task._startM;
     let initialEndM = task._endM;
+
+    // 모바일 롱프레스 타이머 (220ms 누르면 드래그 활성화)
+    let longPressTimer = null;
+    const LONG_PRESS_DELAY = 220;
 
     // 실시간 플로팅 시간 안내 툴팁 & 가이드라인
     let tooltip = null;
@@ -446,8 +451,8 @@ const TimetableGrid = (function () {
         document.body.appendChild(tooltip);
       }
       tooltip.textContent = text;
-      tooltip.style.left = `${x + 18}px`;
-      tooltip.style.top = `${y - 14}px`;
+      tooltip.style.left = `${Math.min(window.innerWidth - 180, Math.max(10, x + 15))}px`;
+      tooltip.style.top = `${Math.max(10, y - 35)}px`;
     }
 
     function showGuideLine(topPos) {
@@ -472,11 +477,7 @@ const TimetableGrid = (function () {
       }
     }
 
-    function onPointerDown(e, dragMode) {
-      if (e.button !== 0) return; // 좌클릭만
-      e.stopPropagation();
-      e.preventDefault();
-
+    function startActiveDrag(e, dragMode) {
       isInteracting = true;
       mode = dragMode;
       startY = e.clientY;
@@ -486,21 +487,81 @@ const TimetableGrid = (function () {
       initialStartM = task._startM;
       initialEndM = task._endM;
 
-      card.classList.add("ring-2", "ring-[#EA0029]", "shadow-lg", "opacity-95");
+      card.classList.add("ring-2", "ring-[#EA0029]", "shadow-2xl", "scale-[1.02]", "opacity-95");
       card.style.zIndex = "50";
       document.body.style.cursor = dragMode === "move" ? "grabbing" : "row-resize";
 
-      // 포인터 캡처
+      // 햅틱 진동 피드백 (모바일 지원 기기)
+      if (navigator.vibrate) {
+        try { navigator.vibrate(25); } catch(err) {}
+      }
+
+      const durText = formatDurationText(initialStartM, initialEndM);
+      showTooltip(`⏱️ ${minutesToTime(initialStartM)} ~ ${minutesToTime(initialEndM)} (${durText})`, e.clientX, e.clientY);
+      showGuideLine(initialTop);
+
       if (e.target && e.target.setPointerCapture) {
         try { e.target.setPointerCapture(e.pointerId); } catch(err) {}
       }
+    }
 
-      document.addEventListener("pointermove", onPointerMove);
-      document.addEventListener("pointerup", onPointerUp);
+    function onPointerDown(e, dragMode) {
+      if (e.button && e.button !== 0) return; // 마우스 우클릭 무시
+
+      startX = e.clientX;
+      startY = e.clientY;
+
+      if (dragMode === "resize-top" || dragMode === "resize-bottom") {
+        // 리사이즈 핸들은 명시적 터치이므로 즉시 리사이즈 모드 진입
+        e.stopPropagation();
+        e.preventDefault();
+        startActiveDrag(e, dragMode);
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", onPointerUp);
+        document.addEventListener("pointercancel", onPointerUp);
+        return;
+      }
+
+      // 카드 본체 이동 (dragMode === 'move')
+      if (e.pointerType === "mouse") {
+        // 마우스(PC)는 0ms 즉시 드래그
+        e.stopPropagation();
+        e.preventDefault();
+        startActiveDrag(e, "move");
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", onPointerUp);
+      } else {
+        // 터치(모바일)는 롱프레스 대기 (기본 스크롤 방해하지 않음)
+        clearTimeout(longPressTimer);
+
+        longPressTimer = setTimeout(() => {
+          // 220ms 유지됨 -> 드래그 모드 활성화!
+          startActiveDrag(e, "move");
+        }, LONG_PRESS_DELAY);
+
+        document.addEventListener("pointermove", onPointerMove, { passive: false });
+        document.addEventListener("pointerup", onPointerUp);
+        document.addEventListener("pointercancel", onPointerUp);
+      }
     }
 
     function onPointerMove(e) {
-      if (!isInteracting) return;
+      // 롱프레스 대기 중 손가락이 8px 이상 움직이면 -> 스크롤 제스처로 판단하여 롱프레스 취소
+      if (!isInteracting) {
+        if (longPressTimer) {
+          const moveDist = Math.hypot(e.clientX - startX, e.clientY - startY);
+          if (moveDist > 8) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+          }
+        }
+        return;
+      }
+
+      // 드래그가 활성화된 경우에만 브라우저 스크롤을 막고 일정 위치 이동
+      if (e.cancelable) {
+        e.preventDefault();
+      }
       card.dataset.dragged = "true";
 
       const deltaY = e.clientY - startY;
@@ -537,10 +598,17 @@ const TimetableGrid = (function () {
     }
 
     function onPointerUp(e) {
-      if (!isInteracting) return;
-      isInteracting = false;
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+
       document.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerup", onPointerUp);
+      document.removeEventListener("pointercancel", onPointerUp);
+
+      if (!isInteracting) return;
+      isInteracting = false;
       document.body.style.cursor = "";
       removeTooltipAndGuide();
 
@@ -548,7 +616,7 @@ const TimetableGrid = (function () {
         try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
       }
 
-      card.classList.remove("ring-2", "ring-[#EA0029]", "shadow-lg", "opacity-95");
+      card.classList.remove("ring-2", "ring-[#EA0029]", "shadow-2xl", "scale-[1.02]", "opacity-95");
 
       const deltaY = e.clientY - startY;
       const deltaMinutes = snapMinutes(deltaY / pxPerMinute);
