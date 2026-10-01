@@ -292,15 +292,16 @@ const TimetableGrid = (function () {
 
     // 테마 색상 클래스 적용
     const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
-    card.className = `task-card absolute rounded-xl p-2.5 flex flex-col justify-between border cursor-grab overflow-hidden transition-all ${catConfig.bg}`;
+
+    // 높이 및 소요시간 단계 판별 (45분 이하 일정은 30분과 동일한 컴팩트 가로 인라인 레이아웃 적용)
+    const isShort = durationM <= 45 || heightPx < 75;
+    const isMedium = !isShort && heightPx < 110;
+    const isTall = !isShort && heightPx >= 110;
+
+    card.className = `task-card absolute rounded-xl ${isShort ? 'px-2.5 py-1.5 justify-center' : 'p-2.5 justify-between'} flex flex-col border cursor-grab overflow-hidden transition-all ${catConfig.bg}`;
 
     // 호버 시 전체 내용 툴팁
     card.title = `[${task.start_time} ~ ${task.end_time} (${durationText})] ${task.task || '일정'}\n• 설명: ${task.summary || '(없음)'}\n• 특이사항: ${task.etc || '(없음)'}`;
-
-    // 높이 단계 판별 (가독성 분기)
-    const isShort = heightPx < 70;
-    const isMedium = heightPx >= 70 && heightPx < 110;
-    const isTall = heightPx >= 110;
 
     let innerContent = `
       <!-- 좌측 포인트 컬러 바 -->
@@ -315,7 +316,7 @@ const TimetableGrid = (function () {
     `;
 
     if (isShort) {
-      // 1. 짧은 일정 (15분~30분): 가로 인라인 압축 레이아웃으로 모든 필수 정보 한눈에 노출
+      // 1. 짧은 일정 (15분 ~ 45분): 가로 인라인 압축 레이아웃으로 모든 필수 정보 한눈에 노출
       innerContent += `
         <div class="flex items-center justify-between gap-1.5 pl-2 pr-1 h-full min-h-0">
           <div class="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
