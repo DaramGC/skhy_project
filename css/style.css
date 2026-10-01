@@ -22,47 +22,90 @@ body {
   background: #94a3b8;
 }
 
-/* 리사이즈 핸들 스타일링 */
-.resize-handle {
-  z-index: 25;
-}
-.resize-handle::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 3px;
-  background-color: rgba(148, 163, 184, 0.6);
-  border-radius: 9999px;
-  opacity: 0;
-  transition: opacity 0.15s ease-in-out;
-}
-.task-card:hover .resize-handle::after {
-  opacity: 1;
-}
-.top-handle::after {
-  top: 1px;
-}
-.bottom-handle::after {
-  bottom: 1px;
+/* 한글 단어 끊김 방지 */
+.break-keep {
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
-/* 카드 드래그 시 살짝 들리는 효과 */
+/* 리사이즈 핸들 스타일링 */
+.resize-handle {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.resize-handle .handle-bar {
+  opacity: 0.4;
+  transition: all 0.15s ease-in-out;
+}
+
+.task-card:hover .resize-handle .handle-bar {
+  opacity: 0.9;
+  background-color: #3b82f6;
+  width: 44px;
+}
+
+.resize-handle:hover .handle-bar {
+  opacity: 1;
+  background-color: #1d4ed8;
+  height: 5px;
+  width: 52px;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* 카드 드래그 시 반응 */
 .task-card {
   user-select: none;
   -webkit-user-select: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
 }
+
+.task-card:hover {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
 .task-card:active {
   cursor: grabbing;
 }
 
-/* 라인 클램프 폴백 */
+/* 라인 클램프 */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* 마그네틱 가이드라인 */
+.time-guide-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+  z-index: 45;
+  pointer-events-none;
+}
+
+/* 실시간 현재 시간 표시선 */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  z-index: 35;
+  pointer-events-none;
 }
 
 /* 부드러운 애니메이션 */

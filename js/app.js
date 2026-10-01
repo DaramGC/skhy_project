@@ -363,14 +363,14 @@
         <td class="py-3 px-4 font-mono font-bold text-slate-700 text-xs">${task.start_time}</td>
         <td class="py-3 px-4 font-mono font-bold text-slate-700 text-xs">${task.end_time}</td>
         <td class="py-3 px-4">
-          <div class="font-bold text-slate-900 text-sm">${escapeHtml(task.task)}</div>
+          <div class="font-bold text-slate-900 text-sm break-keep">${escapeHtml(task.task)}</div>
           <span class="inline-block mt-0.5 text-[10px] px-1.5 py-0.5 rounded border ${catConfig.badge}">${catConfig.label}</span>
         </td>
-        <td class="py-3 px-4 text-xs text-slate-600 max-w-xs truncate">${escapeHtml(task.summary || "-")}</td>
-        <td class="py-3 px-4 text-xs text-slate-500">${escapeHtml(task.etc || "-")}</td>
+        <td class="py-3 px-4 text-xs text-slate-600 max-w-sm break-keep leading-relaxed">${escapeHtml(task.summary || "-")}</td>
+        <td class="py-3 px-4 text-xs text-slate-500 break-keep">${escapeHtml(task.etc || "-")}</td>
         <td class="py-3 px-4 text-right">
           <button class="edit-row-btn px-2.5 py-1 text-xs font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg mr-1 transition-colors">수정</button>
-          <button class="delete-row-btn px-2.5 py-1 text-xs font-semibold text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors">삭제</button>
+          <button class="delete-row-btn px-2.5 py-1 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors">삭제</button>
         </td>
       `;
 
