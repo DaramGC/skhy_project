@@ -357,8 +357,8 @@ const TimetableGrid = (function () {
         <div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
           <div class="handle-bar w-12 h-1 rounded-full"></div>
         </div>
-      ` : ''}
-    `;
+      `;
+    }
 
     card.innerHTML = innerContent;
 
