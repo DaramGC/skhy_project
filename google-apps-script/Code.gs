@@ -99,9 +99,19 @@ function doPost(e) {
 }
 
 /**
- * 원본 timetable 스프레드시트의 모든 시트 데이터 읽기
+ * 원본 timetable 스프레드시트의 모든 시트 데이터 읽기 (CacheService 고속 캐싱 적용)
  */
-function readAllSheetsFromSource() {
+function readAllSheetsFromSource(forceRefresh) {
+  const cache = CacheService.getScriptCache();
+  if (!forceRefresh) {
+    const cached = cache.get("sheets_source_data_v1");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch(e) {}
+    }
+  }
+
   const ss = SpreadsheetApp.openById(SOURCE_SPREADSHEET_ID);
   const sheets = ss.getSheets();
   const result = [];
@@ -156,6 +166,11 @@ function readAllSheetsFromSource() {
       data: rowsData
     });
   }
+
+  // 30초간 서버 캐싱하여 연속 요청 시 0.1초 초고속 응답
+  try {
+    cache.put("sheets_source_data_v1", JSON.stringify(result), 30);
+  } catch(e) {}
 
   return result;
 }
@@ -222,6 +237,11 @@ function saveSheetsToTarget(sheets) {
       try { ss.deleteSheet(defaultSheet); } catch(e) {}
     }
   }
+
+  // 캐시 무효화 (저장 후 즉시 최신 데이터 반영)
+  try {
+    CacheService.getScriptCache().remove("sheets_source_data_v1");
+  } catch(e) {}
 
   return updatedSheets;
 }

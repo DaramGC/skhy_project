@@ -63,22 +63,27 @@ const SheetsApi = (function () {
    * 원본 timetable 시트에서 데이터 불러오기
    * (연동 URL이 있으면 구글 시트에서 가져오고, 없거나 오류 발생 시 로컬 캐시/Mock 사용)
    */
-  async function fetchSheetsData() {
+  async function fetchSheetsData(timeoutMs = 6000) {
     const gasUrl = getGasUrl();
 
     if (!gasUrl) {
-      console.info("[SheetsApi] Apps Script URL 미설정 -> 로컬 Mock 데이터를 사용합니다.");
+      console.info("[SheetsApi] Apps Script URL 미설정 -> 로컬 캐시/Mock 데이터를 사용합니다.");
       return {
         source: "local",
         data: getLocalData()
       };
     }
 
+    const controller = new AbortController();
+    const timeoutTimer = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
       const response = await fetch(`${gasUrl}?action=getSheets`, {
         method: "GET",
-        mode: "cors"
+        mode: "cors",
+        signal: controller.signal
       });
+      clearTimeout(timeoutTimer);
 
       if (!response.ok) {
         throw new Error(`HTTP Error ${response.status}`);
@@ -96,7 +101,7 @@ const SheetsApi = (function () {
         updatedAt: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
         data: (s.data || []).map(item => ({
           ...item,
-          category: guessCategory(item.task, item.summary)
+          category: item.category || guessCategory(item.task, item.summary)
         }))
       }));
 
@@ -111,10 +116,13 @@ const SheetsApi = (function () {
         data: fullData
       };
     } catch (error) {
-      console.warn("[SheetsApi] 구글 시트 통신 오류 -> 로컬 캐시 데이터를 유지합니다.", error);
+      clearTimeout(timeoutTimer);
+      const isTimeout = error.name === "AbortError";
+      const errMsg = isTimeout ? "구글 시트 응답 지연 (타임아웃)" : error.message;
+      console.warn("[SheetsApi] 구글 시트 통신 오류/지연 -> 로컬 캐시 데이터를 유지합니다:", errMsg);
       return {
         source: "local_fallback",
-        error: error.message,
+        error: errMsg,
         data: getLocalData()
       };
     }

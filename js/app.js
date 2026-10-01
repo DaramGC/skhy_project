@@ -78,12 +78,11 @@
   };
 
   /**
-   * 애플리케이션 초기화
+   * 애플리케이션 초기화 (0ms 즉시 화면 렌더링 + 비동기 백그라운드 시트 동기화)
    */
   async function init() {
     setupEventListeners();
     startLiveClock();
-    updateConnectionBadge();
 
     // 타임테이블 엔진 초기화
     TimetableGrid.init(elements.timetableContainer, {
@@ -92,8 +91,19 @@
       onGridSlotClick: handleGridSlotClick
     });
 
-    // 데이터 로드
-    await loadInitialData();
+    // 1단계: 로컬 캐시 데이터로 대기 시간 0초 즉시 화면 표출 (체감 대기시간 0ms)
+    const local = SheetsApi.getLocalData();
+    if (local && local.sheets && local.sheets.length > 0) {
+      state.sheets = local.sheets;
+      state.currentDate = local.currentDate || "2026-10-01";
+      state.activeSheetIndex = 0;
+      renderAll();
+    } else {
+      renderSkeletonLoading();
+    }
+
+    // 2단계: 백그라운드에서 실시간 Google Sheet 비동기 동기화 (화면 멈춤 현상 완전 제거)
+    loadInitialData(false);
   }
 
   /**
@@ -200,48 +210,42 @@
    * 초기 데이터 불러오기 (SWR - Stale While Revalidate 캐시 즉시 렌더링 전략)
    */
   async function loadInitialData(isManualRefresh = false) {
-    // 1. 로컬 캐시 확인 (0ms 즉시 화면 표출)
-    const local = SheetsApi.getLocalData();
-    const hasValidCache = local && local.sheets && local.sheets.length > 0;
-
-    if (hasValidCache && !isManualRefresh) {
-      state.sheets = local.sheets;
-      state.currentDate = local.currentDate || "2026-10-01";
-      state.activeSheetIndex = 0;
-      renderAll(); // 캐시 데이터로 즉각 렌더링 (체감 대기시간 0초!)
-
+    if (isManualRefresh) {
+      showLoading(true);
+    } else {
       // 상단 뱃지에 백그라운드 동기화 중 표시
       elements.connectionBadge.className = "ml-1 sm:ml-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs";
       elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#EA0029] animate-ping"></span> 시트 동기화 중...`;
-    } else {
-      renderSkeletonLoading();
-      showLoading(true);
     }
 
     try {
-      // 2. 백그라운드에서 최신 Google Sheet 데이터 조회
-      const res = await SheetsApi.fetchSheetsData();
-      state.sheets = res.data.sheets || [];
-      state.currentDate = res.data.currentDate || "2026-10-01";
-      
-      if (state.activeSheetIndex >= state.sheets.length) {
-        state.activeSheetIndex = 0;
-      }
+      // 백그라운드에서 최신 Google Sheet 데이터 비동기 조회 (6초 타임아웃 보호)
+      const res = await SheetsApi.fetchSheetsData(6000);
+      if (res && res.data && res.data.sheets && res.data.sheets.length > 0) {
+        state.sheets = res.data.sheets;
+        state.currentDate = res.data.currentDate || "2026-10-01";
+        
+        if (state.activeSheetIndex >= state.sheets.length) {
+          state.activeSheetIndex = 0;
+        }
 
-      renderAll();
+        renderAll();
+      }
       updateConnectionBadge();
 
       if (isManualRefresh) {
         showToast("구글 스프레드시트에서 최신 데이터를 새로고침했습니다.", "success", 2500);
       }
     } catch (e) {
-      console.error(e);
+      console.warn("[App] 데이터 로드 실패/지연 -> 로컬 데이터 유지:", e);
       updateConnectionBadge();
-      if (!hasValidCache) {
+      if (isManualRefresh) {
         showToast("데이터 로드 중 오류가 발생했습니다: " + e.message, "error");
       }
     } finally {
-      showLoading(false);
+      if (isManualRefresh) {
+        showLoading(false);
+      }
     }
   }
 
