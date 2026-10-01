@@ -194,7 +194,7 @@ const TimetableGrid = (function () {
       const hourRow = document.createElement("div");
       hourRow.style.top = `${rowTop}px`;
       hourRow.style.height = `${hourHeight}px`;
-      hourRow.className = "absolute left-0 right-0 border-b border-slate-300 relative group cursor-pointer hover:bg-slate-50/80 transition-colors";
+      hourRow.className = "absolute left-0 right-0 border-b border-slate-300 group cursor-pointer hover:bg-slate-50/80 transition-colors";
       hourRow.dataset.hour = h;
 
       if (h === START_HOUR) {
