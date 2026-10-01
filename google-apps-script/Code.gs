@@ -25,6 +25,17 @@ const TARGET_SPREADSHEET_ID = "1ISBLWMZNBjVe7yJU7W8QWNGyhlZIV6qBsKDplee2Xpc";
 const COLUMN_HEADERS = ["start_time", "end_time", "task", "summary", "etc"];
 
 /**
+ * 스프레드시트가 열릴 때 상단에 커스텀 메뉴 자동 생성
+ * 스프레드시트 메뉴에서 바로 [✨ 샘플 데이터 자동 생성]을 실행할 수 있습니다.
+ */
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu("📅 시간표 관리")
+    .addItem("✨ 샘플 데이터(홍길동/김철수/이영희 시트) 자동 생성", "populateSampleData")
+    .addToUi();
+}
+
+/**
  * GET 요청 핸들러 (데이터 조회 및 샘플 생성)
  */
 function doGet(e) {

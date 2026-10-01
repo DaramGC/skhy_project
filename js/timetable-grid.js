@@ -202,8 +202,9 @@ const TimetableGrid = (function () {
    * 개별 Task 블록 카드 요소 생성
    */
   function createTaskCard(task, startGridM) {
+    // 카드 컨테이너
     const card = document.createElement("div");
-    card.className = "task-card absolute rounded-xl p-2.5 flex flex-col justify-between shadow-sm border transition-all duration-150 cursor-pointer overflow-hidden";
+    card.className = "task-card absolute rounded-xl p-2 flex flex-col gap-0.5 shadow-xs border transition-all duration-150 cursor-pointer overflow-hidden";
     card.dataset.id = task.id;
 
     const startM = task._startM;
@@ -229,43 +230,72 @@ const TimetableGrid = (function () {
     const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
     card.className += ` ${catConfig.bg}`;
 
-    // 카드 내부 렌더링
-    const isCompact = heightPx < 55;
+    // 툴팁 설정 (마우스 올리면 전체 내용 확인 가능)
+    card.title = `[${task.start_time} - ${task.end_time}] ${task.task || '제목 없음'}\n• 설명: ${task.summary || '(없음)'}\n• 특이사항: ${task.etc || '(없음)'}`;
 
-    card.innerHTML = `
+    // 높이별 적응형 렌더링 (Task 제목이 특이사항에 가려지지 않도록 철저히 분기)
+    const isVeryShort = heightPx < 65;   // ~45분 이하: 시간 + Task명만 표시
+    const isMedium = heightPx >= 65 && heightPx < 95; // 1시간 내외: 시간 + Task명 + 특이사항 1줄
+    const isTall = heightPx >= 95;      // 1시간 15분 이상: 시간 + 카테고리 + Task명 + 설명 + 특이사항 태그
+
+    let innerContent = `
       <!-- 좌측 포인트 컬러 바 -->
       <div class="absolute left-0 top-0 bottom-0 w-1.5 ${catConfig.bar}"></div>
 
-      <!-- 상단 리사이즈 핸들 (읽기전용 아닐 때) -->
+      <!-- 상단 리사이즈 핸들 -->
       ${!isReadOnly ? '<div class="resize-handle top-handle absolute top-0 left-0 right-0 h-2 cursor-ns-resize hover:bg-blue-400/30 transition-colors"></div>' : ''}
 
-      <!-- 헤더: 시간 및 카테고리 -->
-      <div class="flex items-center justify-between gap-1 pl-1">
+      <!-- 헤더: 시간 & 카테고리 -->
+      <div class="flex items-center justify-between gap-1 pl-1 flex-shrink-0">
         <span class="text-[11px] font-bold font-mono tracking-tight text-slate-700 flex items-center gap-1">
           <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           ${task.start_time} - ${task.end_time}
         </span>
-        ${!isCompact ? `<span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${catConfig.badge}">${catConfig.label}</span>` : ''}
+        ${isTall ? `<span class="text-[10px] font-medium px-1.5 py-0.2 rounded-full border ${catConfig.badge}">${catConfig.label}</span>` : ''}
       </div>
 
-      <!-- 본문: Task명 & 설명 -->
-      <div class="pl-1 mt-0.5 flex-1 min-h-0 overflow-hidden">
-        <div class="font-bold text-xs text-slate-900 truncate leading-snug">${escapeHtml(task.task || "제목 없는 일정")}</div>
-        ${!isCompact && task.summary ? `<div class="text-[11px] text-slate-600 line-clamp-2 mt-0.5 leading-tight">${escapeHtml(task.summary)}</div>` : ''}
+      <!-- 최우선 표시: Task 제목 (절대 가려지지 않음) -->
+      <div class="pl-1 font-bold text-xs sm:text-[13px] text-slate-900 truncate leading-snug flex-shrink-0">
+        ${escapeHtml(task.task || "제목 없는 일정")}
       </div>
+    `;
 
-      <!-- 하단: 특이사항 (etc) 태그 -->
-      ${!isCompact && task.etc ? `
-        <div class="pl-1 mt-1 flex items-center gap-1">
-          <span class="text-[10px] bg-white/80 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200/80 truncate max-w-full">
-            📍 ${escapeHtml(task.etc)}
-          </span>
+    // 중간 높이: 특이사항이 있으면 한 줄로 깔끔하게 표시
+    if (isMedium && task.etc) {
+      innerContent += `
+        <div class="pl-1 text-[10px] text-slate-600 truncate flex items-center gap-1 mt-0.5">
+          <span class="text-slate-400">📍</span>
+          <span>${escapeHtml(task.etc)}</span>
         </div>
-      ` : ''}
+      `;
+    }
 
+    // 큰 높이: 설명(summary) 및 하단 특이사항 태그 표시
+    if (isTall) {
+      if (task.summary) {
+        innerContent += `
+          <div class="pl-1 text-[11px] text-slate-600 line-clamp-2 mt-0.5 leading-tight flex-1 overflow-hidden">
+            ${escapeHtml(task.summary)}
+          </div>
+        `;
+      }
+      if (task.etc) {
+        innerContent += `
+          <div class="pl-1 mt-auto pt-1 flex-shrink-0">
+            <span class="text-[10px] bg-white/90 text-slate-700 font-medium px-2 py-0.5 rounded-md border border-slate-200/80 truncate block max-w-full">
+              📍 ${escapeHtml(task.etc)}
+            </span>
+          </div>
+        `;
+      }
+    }
+
+    innerContent += `
       <!-- 하단 리사이즈 핸들 -->
       ${!isReadOnly ? '<div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize hover:bg-blue-400/30 transition-colors"></div>' : ''}
     `;
+
+    card.innerHTML = innerContent;
 
     // 호버 애니메이션
     card.addEventListener("mouseenter", () => {
