@@ -9,7 +9,6 @@
     sheets: [],
     activeSheetIndex: 0,
     viewMode: "grid", // 'grid' | 'table'
-    zoomScale: parseInt(localStorage.getItem("skhy_timetable_zoom") || "96", 10),
     isLoading: false,
     editingTask: null, // 모달에서 편집 중인 Task
     editingTaskIndex: -1
@@ -86,14 +85,12 @@
     setupEventListeners();
     startLiveClock();
 
-    // 타임테이블 엔진 초기화 및 줌 스케일 적용
+    // 타임테이블 엔진 초기화
     TimetableGrid.init(elements.timetableContainer, {
       onTaskClick: handleTaskClick,
       onTaskChange: handleTaskChangeFromGrid,
       onGridSlotClick: handleGridSlotClick
     });
-    TimetableGrid.setHourHeight(state.zoomScale);
-    updateZoomButtons(state.zoomScale);
 
     // 1단계: 로컬 캐시 데이터로 대기 시간 0초 즉시 화면 표출 (체감 대기시간 0ms)
     const local = SheetsApi.getLocalData();
@@ -133,19 +130,6 @@
     // 뷰 모드 전환
     elements.viewGridBtn.addEventListener("click", () => switchViewMode("grid"));
     elements.viewTableBtn.addEventListener("click", () => switchViewMode("table"));
-
-    // 줌 스케일 버튼 이벤트
-    const zoomButtons = document.querySelectorAll(".zoom-btn");
-    zoomButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const h = parseInt(btn.dataset.height, 10);
-        state.zoomScale = h;
-        localStorage.setItem("skhy_timetable_zoom", h.toString());
-        TimetableGrid.setHourHeight(h);
-        updateZoomButtons(h);
-        showToast(`시간표 세로 배율: ${btn.textContent.trim()}`, "info", 1500);
-      });
-    });
 
     // 개인별 완료 상태 토글 버튼 (확정 시 timetable_fixed 즉시 동기화)
     elements.toggleCompleteBtn.addEventListener("click", toggleActiveSheetStatus);
@@ -863,18 +847,6 @@
       elements.viewTableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200";
     }
     renderAll();
-  }
-
-  function updateZoomButtons(currentHeight) {
-    const zoomButtons = document.querySelectorAll(".zoom-btn");
-    zoomButtons.forEach(btn => {
-      const h = parseInt(btn.dataset.height, 10);
-      if (h === currentHeight) {
-        btn.className = "zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200";
-      } else {
-        btn.className = "zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 border border-transparent";
-      }
-    });
   }
 
   function updateConnectionBadge() {
