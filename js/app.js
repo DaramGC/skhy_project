@@ -174,32 +174,32 @@
   }
 
   /**
-   * 스켈레톤 로딩 UI 렌더링 (클린 쉬머 효과)
+   * 스켈레톤 로딩 UI 렌더링 (반응형: 모바일 가로 칩, 데스크탑 세로 카드)
    */
   function renderSkeletonLoading() {
-    // 1. 좌측 탭 세로 스켈레톤
+    // 1. 탭 스켈레톤
     elements.sheetTabs.innerHTML = `
-      <div class="h-14 w-full rounded-xl skeleton-shimmer border border-slate-200"></div>
-      <div class="h-14 w-full rounded-xl skeleton-shimmer border border-slate-200"></div>
-      <div class="h-14 w-full rounded-xl skeleton-shimmer border border-slate-200"></div>
+      <div class="h-11 w-32 sm:w-36 lg:w-full lg:h-14 flex-shrink-0 rounded-xl skeleton-shimmer border border-slate-200"></div>
+      <div class="h-11 w-32 sm:w-36 lg:w-full lg:h-14 flex-shrink-0 rounded-xl skeleton-shimmer border border-slate-200"></div>
+      <div class="h-11 w-32 sm:w-36 lg:w-full lg:h-14 flex-shrink-0 rounded-xl skeleton-shimmer border border-slate-200"></div>
     `;
 
     // 2. 메인 시간표 스켈레톤
     elements.timetableContainer.innerHTML = `
-      <div class="w-full bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div class="h-6 w-48 rounded-lg skeleton-shimmer"></div>
-          <div class="h-6 w-32 rounded-lg skeleton-shimmer"></div>
+      <div class="w-full bg-white rounded-2xl p-4 sm:p-8 border border-slate-200 shadow-xs space-y-4 sm:space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3 sm:pb-4">
+          <div class="h-5 sm:h-6 w-36 sm:w-48 rounded-lg skeleton-shimmer"></div>
+          <div class="h-5 sm:h-6 w-24 sm:w-32 rounded-lg skeleton-shimmer"></div>
         </div>
-        <div class="space-y-4 py-2">
-          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-slate-100 flex items-center px-6">
-            <div class="h-4 w-1/3 bg-slate-200/80 rounded-md"></div>
+        <div class="space-y-3 sm:space-y-4 py-2">
+          <div class="h-20 sm:h-24 w-full rounded-2xl skeleton-shimmer border border-slate-100 flex items-center px-4 sm:px-6">
+            <div class="h-3.5 sm:h-4 w-1/3 bg-slate-200/80 rounded-md"></div>
           </div>
-          <div class="h-32 w-full rounded-2xl skeleton-shimmer border border-slate-100 flex items-center px-6">
-            <div class="h-4 w-1/2 bg-slate-200/80 rounded-md"></div>
+          <div class="h-24 sm:h-32 w-full rounded-2xl skeleton-shimmer border border-slate-100 flex items-center px-4 sm:px-6">
+            <div class="h-3.5 sm:h-4 w-1/2 bg-slate-200/80 rounded-md"></div>
           </div>
-          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-slate-100 flex items-center px-6">
-            <div class="h-4 w-2/5 bg-slate-200/80 rounded-md"></div>
+          <div class="h-20 sm:h-24 w-full rounded-2xl skeleton-shimmer border border-slate-100 flex items-center px-4 sm:px-6">
+            <div class="h-3.5 sm:h-4 w-2/5 bg-slate-200/80 rounded-md"></div>
           </div>
         </div>
         <div class="text-center py-2 text-xs font-semibold text-slate-500 flex items-center justify-center gap-2">
@@ -301,7 +301,7 @@
   }
 
   /**
-   * 좌측 사이드바 팀원 / 개인별 탭 목록 렌더링 (세로 정렬)
+   * 팀원 / 개인별 탭 목록 렌더링 (반응형: 모바일 가로 스크롤 칩 / PC 좌측 세로 카드)
    */
   function renderSheetTabs() {
     elements.sheetTabs.innerHTML = "";
@@ -311,10 +311,10 @@
       const isCompleted = sheet.status === "completed";
 
       const tab = document.createElement("button");
-      tab.className = `group w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm transition-all duration-150 ${
+      tab.className = `group flex-shrink-0 flex items-center justify-between gap-2.5 px-3 py-2 sm:px-3.5 sm:py-2.5 lg:py-3 rounded-xl text-xs sm:text-sm transition-all duration-150 whitespace-nowrap min-w-[125px] sm:min-w-[150px] lg:min-w-0 lg:w-full ${
         isActive
           ? "bg-rose-50/80 text-[#EA0029] border border-rose-200 shadow-2xs ring-2 ring-[#EA0029]/20 font-bold"
-          : "bg-slate-50/60 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200/80 font-semibold"
+          : "bg-slate-50/70 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200/80 font-semibold"
       }`;
 
       // 상태 아이콘 & 뱃지
@@ -325,14 +325,14 @@
       const taskCount = (sheet.data || []).length;
 
       tab.innerHTML = `
-        <div class="flex items-center gap-2.5 min-w-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           ${statusIcon}
           <div class="flex flex-col items-start min-w-0">
-            <span class="truncate font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#EA0029]">${escapeHtml(sheet.sheetName)}</span>
-            <span class="text-[10px] ${isCompleted ? 'text-emerald-600 font-semibold' : 'text-slate-400 font-normal'}">${isCompleted ? '확정 완료' : '수정 진행 중'}</span>
+            <span class="truncate font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#EA0029]">👤 ${escapeHtml(sheet.sheetName)}</span>
+            <span class="text-[9px] sm:text-[10px] ${isCompleted ? 'text-emerald-600 font-semibold' : 'text-slate-400 font-normal'}">${isCompleted ? '확정 완료' : '수정 중'}</span>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-lg text-xs font-mono-code font-bold ${
+        <span class="px-1.5 sm:px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-mono-code font-bold ${
           isActive ? "bg-white text-[#EA0029] border border-rose-200 shadow-2xs" : "bg-white text-slate-500 border border-slate-200"
         }">${taskCount}개</span>
       `;

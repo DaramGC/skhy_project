@@ -157,9 +157,9 @@ const TimetableGrid = (function () {
     const gridWrapper = document.createElement("div");
     gridWrapper.className = "relative flex w-full select-none bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden";
 
-    // 1. 좌측 시간 라벨 컬럼 (상단 TOP_PADDING 적용으로 08:00 상단 여백 완벽 확보)
+    // 1. 좌측 시간 라벨 컬럼 (모바일: w-16 슬림화, 데스크탑: w-28)
     const timeColumn = document.createElement("div");
-    timeColumn.className = "w-24 sm:w-28 flex-shrink-0 border-r border-slate-300 bg-slate-50/70 relative";
+    timeColumn.className = "w-16 sm:w-24 md:w-28 flex-shrink-0 border-r border-slate-300 bg-slate-50/70 relative";
     timeColumn.style.height = `${TOTAL_HOURS * hourHeight + TOP_PADDING + 28}px`;
 
     for (let h = START_HOUR; h <= END_HOUR; h++) {
@@ -169,11 +169,11 @@ const TimetableGrid = (function () {
       hourDiv.style.top = `${topPos}px`;
       
       hourDiv.innerHTML = `
-        <div class="flex flex-col items-center bg-white px-2.5 sm:px-3 py-1 rounded-lg border border-slate-300 text-slate-800 shadow-2xs hover:border-[#EA0029]/50 transition-colors">
-          <span class="text-xs sm:text-[13px] font-mono-code font-extrabold tracking-tight text-slate-900">
+        <div class="flex flex-col items-center bg-white px-1 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-lg border border-slate-300 text-slate-800 shadow-2xs hover:border-[#EA0029]/50 transition-colors">
+          <span class="text-[11px] sm:text-xs md:text-[13px] font-mono-code font-extrabold tracking-tight text-slate-900">
             ${String(h).padStart(2, "0")}:00
           </span>
-          <span class="text-[9px] font-mono-code text-slate-500 font-semibold tracking-tight -mt-0.5">
+          <span class="text-[9px] font-mono-code text-slate-500 font-semibold tracking-tight -mt-0.5 hidden sm:inline-block">
             ${h < 12 ? 'AM' : 'PM'}
           </span>
         </div>
@@ -260,7 +260,7 @@ const TimetableGrid = (function () {
       line.innerHTML = `
         <div class="absolute -left-1.5 -top-1.5 w-3 h-3 rounded-full bg-[#EA0029] animate-ping opacity-75"></div>
         <div class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-[#EA0029]"></div>
-        <span class="absolute left-3 -top-2.5 bg-[#EA0029] text-white font-mono-code font-bold text-[10px] px-2 py-0.2 rounded-full shadow-xs">
+        <span class="absolute left-3 -top-2.5 bg-[#EA0029] text-white font-mono-code font-bold text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.2 rounded-full shadow-xs">
           ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")} LIVE
         </span>
       `;
@@ -290,8 +290,8 @@ const TimetableGrid = (function () {
 
     card.style.top = `${topPx}px`;
     card.style.height = `${heightPx}px`;
-    card.style.left = `calc(${leftOffset}% + 6px)`;
-    card.style.width = `calc(${colWidth}% - 12px)`;
+    card.style.left = `calc(${leftOffset}% + 4px)`;
+    card.style.width = `calc(${colWidth}% - 8px)`;
     card.style.zIndex = (10 + (task._col || 0)).toString();
 
     // 테마 색상 클래스 적용
@@ -302,19 +302,19 @@ const TimetableGrid = (function () {
     const isMedium = !isShort && heightPx < 110;
     const isTall = !isShort && heightPx >= 110;
 
-    card.className = `task-card absolute rounded-xl ${isShort ? 'px-2.5 py-1.5 justify-center' : 'p-2.5 justify-between'} flex flex-col border cursor-grab overflow-hidden transition-all ${catConfig.bg}`;
+    card.className = `task-card absolute rounded-xl ${isShort ? 'px-2 sm:px-2.5 py-1 sm:py-1.5 justify-center' : 'p-2 sm:p-2.5 justify-between'} flex flex-col border cursor-grab overflow-hidden transition-all ${catConfig.bg}`;
 
     // 호버 시 전체 내용 툴팁
     card.title = `[${task.start_time} ~ ${task.end_time} (${durationText})] ${task.task || '일정'}\n• 설명: ${task.summary || '(없음)'}\n• 특이사항: ${task.etc || '(없음)'}`;
 
     let innerContent = `
       <!-- 좌측 포인트 컬러 바 -->
-      <div class="absolute left-0 top-0 bottom-0 w-1.5 ${catConfig.bar}"></div>
+      <div class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 ${catConfig.bar}"></div>
 
       <!-- 상단 리사이즈 핸들 -->
       ${!isReadOnly ? `
         <div class="resize-handle top-handle absolute top-0 left-0 right-0 h-4 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-10 h-1 rounded-full"></div>
+          <div class="handle-bar w-8 sm:w-10 h-1 rounded-full"></div>
         </div>
       ` : ''}
     `;
@@ -322,18 +322,18 @@ const TimetableGrid = (function () {
     if (isShort) {
       // 1. 짧은 일정 (15분 ~ 45분): 가로 인라인 압축 레이아웃으로 모든 필수 정보 한눈에 노출
       innerContent += `
-        <div class="flex items-center justify-between gap-1.5 pl-2 pr-1 h-full min-h-0">
-          <div class="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-            <span class="text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-0.5 flex-shrink-0">
-              <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="flex items-center justify-between gap-1 pl-1 sm:pl-2 pr-1 h-full min-h-0">
+          <div class="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
+            <span class="text-[10px] sm:text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-0.5 flex-shrink-0">
+              <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               ${task.start_time}-${task.end_time}
             </span>
-            <span class="text-[10px] font-bold px-1.5 py-0.2 rounded border shadow-2xs ${catConfig.badge} flex-shrink-0">${catConfig.label}</span>
-            <span class="font-extrabold text-xs text-slate-900 truncate min-w-0">${escapeHtml(task.task || "제목 없음")}</span>
-            ${task.summary ? `<span class="text-[11px] text-slate-500 truncate hidden md:inline font-normal">• ${escapeHtml(task.summary)}</span>` : ''}
-            ${task.etc ? `<span class="text-[10px] bg-white/90 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200 truncate hidden xl:inline">📍 ${escapeHtml(task.etc)}</span>` : ''}
+            <span class="text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.2 rounded border shadow-2xs ${catConfig.badge} flex-shrink-0">${catConfig.label}</span>
+            <span class="font-extrabold text-[11px] sm:text-xs text-slate-900 truncate min-w-0">${escapeHtml(task.task || "제목 없음")}</span>
+            ${task.summary ? `<span class="text-[10px] sm:text-[11px] text-slate-500 truncate hidden md:inline font-normal">• ${escapeHtml(task.summary)}</span>` : ''}
+            ${task.etc ? `<span class="text-[9px] sm:text-[10px] bg-white/90 text-slate-600 px-1 sm:px-1.5 py-0.2 rounded border border-slate-200 truncate hidden xl:inline">📍 ${escapeHtml(task.etc)}</span>` : ''}
           </div>
-          <span class="text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs flex-shrink-0">
+          <span class="text-[9px] sm:text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1 sm:px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs flex-shrink-0">
             ${durationText}
           </span>
         </div>
@@ -342,26 +342,26 @@ const TimetableGrid = (function () {
       // 2. 표준 및 세로 확장 레이아웃
       innerContent += `
         <!-- 헤더: 시간 + 소요시간 + 카테고리 -->
-        <div class="flex items-center justify-between gap-1.5 pl-1.5 pt-0.5 flex-shrink-0">
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-1">
-              <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="flex items-center justify-between gap-1 pl-1 sm:pl-1.5 pt-0.5 flex-shrink-0">
+          <div class="flex items-center gap-1 sm:gap-1.5">
+            <span class="text-[10px] sm:text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-0.5 sm:gap-1">
+              <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               ${task.start_time} - ${task.end_time}
             </span>
-            <span class="text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs">
+            <span class="text-[9px] sm:text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1 sm:px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs">
               ${durationText}
             </span>
           </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-2xs ${catConfig.badge}">${catConfig.label}</span>
+          <span class="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shadow-2xs ${catConfig.badge}">${catConfig.label}</span>
         </div>
 
         <!-- 본문: Task 제목 -->
-        <div class="pl-1.5 flex-1 min-h-0 flex flex-col justify-center my-0.5">
-          <div class="font-extrabold text-xs sm:text-[13px] text-slate-900 leading-snug line-clamp-2 break-keep">
+        <div class="pl-1 sm:pl-1.5 flex-1 min-h-0 flex flex-col justify-center my-0.5">
+          <div class="font-extrabold text-[11px] sm:text-xs md:text-[13px] text-slate-900 leading-snug line-clamp-2 break-keep">
             ${escapeHtml(task.task || "제목 없는 일정")}
           </div>
           ${task.summary ? `
-            <div class="text-[11px] text-slate-600 line-clamp-2 break-keep leading-relaxed mt-0.5">
+            <div class="text-[10px] sm:text-[11px] text-slate-600 line-clamp-2 break-keep leading-relaxed mt-0.5">
               ${escapeHtml(task.summary)}
             </div>
           ` : ''}
@@ -371,8 +371,8 @@ const TimetableGrid = (function () {
       // 하단부: 특이사항 (etc) 표시
       if (task.etc && isTall) {
         innerContent += `
-          <div class="pl-1.5 pb-0.5 flex items-center gap-1 flex-shrink-0">
-            <span class="text-[10px] font-medium bg-white/90 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/90 truncate max-w-full shadow-2xs">
+          <div class="pl-1 sm:pl-1.5 pb-0.5 flex items-center gap-1 flex-shrink-0">
+            <span class="text-[9px] sm:text-[10px] font-medium bg-white/90 text-slate-700 px-1.5 sm:px-2 py-0.5 rounded-md border border-slate-200/90 truncate max-w-full shadow-2xs">
               📍 ${escapeHtml(task.etc)}
             </span>
           </div>
@@ -384,7 +384,7 @@ const TimetableGrid = (function () {
     if (!isReadOnly) {
       innerContent += `
         <div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-4 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-10 h-1 rounded-full"></div>
+          <div class="handle-bar w-8 sm:w-10 h-1 rounded-full"></div>
         </div>
       `;
     }
