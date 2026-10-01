@@ -210,19 +210,19 @@ const SheetsApi = (function () {
    */
   function guessCategory(task, summary) {
     const text = ((task || "") + " " + (summary || "")).toLowerCase();
-    if (text.includes("회의") || text.includes("미팅") || text.includes("스크럼") || text.includes("싱크")) {
+    if (text.includes("회의") || text.includes("미팅") || text.includes("스크럼") || text.includes("싱크") || text.includes("공유") || text.includes("소집") || text.includes("연락")) {
       return "meeting";
     }
-    if (text.includes("개발") || text.includes("구현") || text.includes("코드") || text.includes("api") || text.includes("인프라") || text.includes("쿼리")) {
+    if (text.includes("개발") || text.includes("구현") || text.includes("코드") || text.includes("api") || text.includes("인프라") || text.includes("쿼리") || text.includes("시뮬레이션") || text.includes("스크립트") || text.includes("추출") || text.includes("매핑")) {
       return "dev";
     }
-    if (text.includes("디자인") || text.includes("기획") || text.includes("와이어프레임") || text.includes("figma") || text.includes("ui")) {
+    if (text.includes("디자인") || text.includes("기획") || text.includes("와이어프레임") || text.includes("figma") || text.includes("ui") || text.includes("레이아웃") || text.includes("패키지") || text.includes("pkg")) {
       return "design";
     }
-    if (text.includes("검토") || text.includes("리뷰") || text.includes("테스트") || text.includes("점검") || text.includes("피드백")) {
+    if (text.includes("검토") || text.includes("리뷰") || text.includes("테스트") || text.includes("점검") || text.includes("피드백") || text.includes("분석") || text.includes("보고") || text.includes("지시") || text.includes("확인") || text.includes("승인") || text.includes("ate") || text.includes("fail") || text.includes("마진")) {
       return "review";
     }
-    if (text.includes("식사") || text.includes("점심") || text.includes("휴식") || text.includes("커피") || text.includes("산책")) {
+    if (text.includes("식사") || text.includes("점심") || text.includes("휴식") || text.includes("커피") || text.includes("산책") || text.includes("마감") || text.includes("퇴근")) {
       return "break";
     }
     return "etc";
