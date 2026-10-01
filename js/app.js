@@ -35,6 +35,7 @@
     timetableContainer: document.getElementById("timetableContainer"),
     tableViewContainer: document.getElementById("tableViewContainer"),
     tableTbody: document.getElementById("tableTbody"),
+    tableAddRowBtn: document.getElementById("tableAddRowBtn"),
     viewGridBtn: document.getElementById("viewGridBtn"),
     viewTableBtn: document.getElementById("viewTableBtn"),
 
@@ -135,6 +136,9 @@
 
     // 일정 추가 버튼
     elements.addNewTaskBtn.addEventListener("click", () => openTaskModal());
+    if (elements.tableAddRowBtn) {
+      elements.tableAddRowBtn.addEventListener("click", handleTableAddRow);
+    }
 
     // 저장 / 새로고침 / 설정 모달
     elements.saveFixedBtn.addEventListener("click", openSaveConfirmModal);
@@ -405,45 +409,89 @@
   }
 
   /**
-   * 테이블(스프레드시트 형태) 뷰 렌더링 (클린 화이트 스타일)
+   * 테이블(스프레드시트 형태) 뷰 렌더링 (인라인 직접 수정 및 자동 저장)
    */
   function renderTableView(sheet) {
     elements.tableTbody.innerHTML = "";
     const tasks = sheet.data || [];
 
     if (tasks.length === 0) {
-      elements.tableTbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">등록된 일정이 없습니다. 우측 상단 [+ 새 일정 추가] 버튼을 눌러보세요.</td></tr>`;
+      elements.tableTbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-slate-400 font-medium">등록된 일정이 없습니다. 하단 [+ 새 일정 행 추가] 또는 상단 버튼을 눌러보세요.</td></tr>`;
       return;
     }
 
     tasks.forEach((task, idx) => {
       const tr = document.createElement("tr");
-      tr.className = "hover:bg-slate-50/80 transition-colors border-b border-slate-100";
+      tr.className = "hover:bg-rose-50/20 transition-colors border-b border-slate-100/90";
 
       const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
 
       tr.innerHTML = `
-        <td class="py-3.5 px-4 font-mono-code font-bold text-slate-800 text-xs">${task.start_time}</td>
-        <td class="py-3.5 px-4 font-mono-code font-bold text-slate-800 text-xs">${task.end_time}</td>
-        <td class="py-3.5 px-4">
-          <div class="font-bold text-slate-900 text-sm break-keep">${escapeHtml(task.task)}</div>
-          <span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded border ${catConfig.badge}">${catConfig.label}</span>
+        <td class="py-2.5 px-3">
+          <input type="time" class="table-start-input w-24 px-2 py-1.5 rounded-lg border border-slate-200 font-mono-code font-bold text-slate-800 text-xs focus:ring-2 focus:ring-[#EA0029] focus:outline-none bg-white shadow-2xs" value="${task.start_time || '09:00'}">
         </td>
-        <td class="py-3.5 px-4 text-xs text-slate-600 max-w-sm break-keep leading-relaxed">${escapeHtml(task.summary || "-")}</td>
-        <td class="py-3.5 px-4 text-xs text-slate-500 break-keep">${escapeHtml(task.etc || "-")}</td>
-        <td class="py-3.5 px-4 text-right">
-          <button class="edit-row-btn px-2.5 py-1 text-xs font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg mr-1 transition-colors">수정</button>
-          <button class="delete-row-btn px-2.5 py-1 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors">삭제</button>
+        <td class="py-2.5 px-3">
+          <input type="time" class="table-end-input w-24 px-2 py-1.5 rounded-lg border border-slate-200 font-mono-code font-bold text-slate-800 text-xs focus:ring-2 focus:ring-[#EA0029] focus:outline-none bg-white shadow-2xs" value="${task.end_time || '10:00'}">
+        </td>
+        <td class="py-2.5 px-3">
+          <input type="text" class="table-task-input w-full px-2.5 py-1.5 rounded-lg border border-slate-200 font-semibold text-slate-900 text-xs focus:ring-2 focus:ring-[#EA0029] focus:outline-none bg-white placeholder-slate-400 shadow-2xs" value="${escapeHtml(task.task || '')}" placeholder="업무 명칭 입력">
+        </td>
+        <td class="py-2.5 px-3">
+          <select class="table-cat-select w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white focus:ring-2 focus:ring-[#EA0029] focus:outline-none shadow-2xs">
+            <option value="meeting" ${task.category === 'meeting' ? 'selected' : ''}>회의/미팅</option>
+            <option value="dev" ${task.category === 'dev' ? 'selected' : ''}>개발/코딩</option>
+            <option value="design" ${task.category === 'design' ? 'selected' : ''}>디자인/기획</option>
+            <option value="review" ${task.category === 'review' ? 'selected' : ''}>검토/피드백</option>
+            <option value="break" ${task.category === 'break' ? 'selected' : ''}>식사/휴식</option>
+            <option value="etc" ${task.category === 'etc' ? 'selected' : ''}>기타 업무</option>
+          </select>
+        </td>
+        <td class="py-2.5 px-3">
+          <textarea rows="2" class="table-summary-input w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 focus:ring-2 focus:ring-[#EA0029] focus:outline-none bg-white resize-y placeholder-slate-400 leading-relaxed shadow-2xs" placeholder="업무 상세 설명 입력">${escapeHtml(task.summary || '')}</textarea>
+        </td>
+        <td class="py-2.5 px-3">
+          <input type="text" class="table-etc-input w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-600 focus:ring-2 focus:ring-[#EA0029] focus:outline-none bg-white placeholder-slate-400 shadow-2xs" value="${escapeHtml(task.etc || '')}" placeholder="특이사항 / 장소 / 메모">
+        </td>
+        <td class="py-2.5 px-3 text-right">
+          <button type="button" class="delete-row-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="행 삭제">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
         </td>
       `;
 
-      tr.querySelector(".edit-row-btn").addEventListener("click", () => openTaskModal(task, idx));
-      tr.querySelector(".delete-row-btn").addEventListener("click", () => {
-        if (confirm(`'${task.task}' 일정을 삭제하시겠습니까?`)) {
+      // 인라인 입력 이벤트 바인딩 (실시간 수정 & 자동 저장)
+      const onFieldChange = (field, val) => {
+        task[field] = val;
+        if (sheet.status === "completed") {
+          sheet.status = "draft";
+          renderActiveSheetHeader();
+          renderSheetTabs();
+        }
+        SheetsApi.saveLocalData({ currentDate: state.currentDate, sheets: state.sheets });
+        renderStatistics();
+      };
+
+      const startInput = tr.querySelector(".table-start-input");
+      const endInput = tr.querySelector(".table-end-input");
+      const taskInput = tr.querySelector(".table-task-input");
+      const catSelect = tr.querySelector(".table-cat-select");
+      const summaryInput = tr.querySelector(".table-summary-input");
+      const etcInput = tr.querySelector(".table-etc-input");
+      const deleteBtn = tr.querySelector(".delete-row-btn");
+
+      startInput.addEventListener("change", (e) => onFieldChange("start_time", e.target.value));
+      endInput.addEventListener("change", (e) => onFieldChange("end_time", e.target.value));
+      taskInput.addEventListener("input", (e) => onFieldChange("task", e.target.value));
+      catSelect.addEventListener("change", (e) => onFieldChange("category", e.target.value));
+      summaryInput.addEventListener("input", (e) => onFieldChange("summary", e.target.value));
+      etcInput.addEventListener("input", (e) => onFieldChange("etc", e.target.value));
+
+      deleteBtn.addEventListener("click", () => {
+        if (confirm(`'${task.task || '선택한'}' 일정 행을 삭제하시겠습니까?`)) {
           sheet.data.splice(idx, 1);
           SheetsApi.saveLocalData({ currentDate: state.currentDate, sheets: state.sheets });
           renderAll();
-          showToast("일정이 삭제되었습니다.", "info");
+          showToast("일정 행이 삭제되었습니다.", "info");
         }
       });
 
@@ -653,6 +701,40 @@
     SheetsApi.saveLocalData({ currentDate: state.currentDate, sheets: state.sheets });
     renderAll();
     showToast(`'${trimmed}' 시트가 새로 생성되었습니다.`, "success");
+  }
+
+  /**
+   * 테이블 뷰에서 새 일정 행 직접 추가
+   */
+  function handleTableAddRow() {
+    const sheet = getActiveSheet();
+    if (!sheet) return;
+
+    const newTask = {
+      id: "task-" + Date.now(),
+      start_time: "09:00",
+      end_time: "10:00",
+      task: "",
+      summary: "",
+      etc: "",
+      category: "dev"
+    };
+
+    sheet.data.push(newTask);
+    if (sheet.status === "completed") {
+      sheet.status = "draft";
+    }
+    SheetsApi.saveLocalData({ currentDate: state.currentDate, sheets: state.sheets });
+    renderAll();
+    showToast("새 일정 행이 추가되었습니다. 내용을 입력해 보세요.", "info", 2000);
+
+    // 새로 추가된 행의 첫 번째 텍스트 입력창 자동 포커스
+    setTimeout(() => {
+      const inputs = elements.tableTbody.querySelectorAll(".table-task-input");
+      if (inputs.length > 0) {
+        inputs[inputs.length - 1].focus();
+      }
+    }, 50);
   }
 
   /**
