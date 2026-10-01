@@ -350,7 +350,7 @@
       elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-cyber bg-[#07241A] text-emerald-300 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.3)]";
       elements.personStatusBadge.innerHTML = `
         <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-        <span>확정 완료 (timetable_fixed 동기화됨)</span>
+        <span>확정 완료</span>
       `;
 
       elements.toggleCompleteBtn.className = "flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold font-cyber text-slate-300 bg-[#0E131F] hover:bg-[#161F33] hover:text-white transition-colors border border-slate-700";
@@ -368,7 +368,7 @@
       elements.toggleCompleteBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-cyber text-white bg-sk-cyber-gradient hover:opacity-95 glow-sk-btn transition-all transform hover:-translate-y-0.5";
       elements.toggleCompleteBtn.innerHTML = `
         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-        <span>${escapeHtml(sheet.sheetName)} 님 일정 확정 (timetable_fixed 저장)</span>
+        <span>${escapeHtml(sheet.sheetName)} 님 일정 확정</span>
       `;
     }
   }
