@@ -1,82 +1,68 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  --sk-red: #FF003C;
-  --sk-crimson: #EA0029;
+  --sk-red: #EA0029;
+  --sk-red-hover: #D00024;
   --sk-orange: #FF6A00;
-  --sk-yellow: #FFE600;
-  --sk-cyber-bg: #07090E;
-  --sk-card-bg: #0E131F;
-  --sk-grid-bg: #0A0E17;
-  --sk-border: #1E293B;
-  --sk-gradient: linear-gradient(135deg, #FF003C 0%, #FF7A00 50%, #FFE600 100%);
+  --sk-orange-hover: #E65F00;
+  --sk-dark: #111827;
+  --sk-slate: #1E293B;
+  --sk-border: #E2E8F0;
+  --sk-bg: #F8FAFC;
 }
 
 body {
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background-color: var(--sk-cyber-bg);
-  background-image: 
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255, 0, 60, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 50% at 100% 50%, rgba(255, 230, 0, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 0% 50%, rgba(255, 0, 60, 0.04) 0%, transparent 60%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-  background-attachment: fixed;
-  color: #E2E8F0;
+  background-color: var(--sk-bg);
+  color: #1E293B;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.font-cyber {
-  font-family: 'Orbitron', 'Rajdhani', "Pretendard Variable", sans-serif;
-}
-
-.font-mono-cyber {
+.font-mono-code {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* SK Cyber Neon Gradients & Text */
-.bg-sk-cyber-gradient {
-  background: linear-gradient(135deg, #FF003C 0%, #FF6A00 50%, #FFE600 100%);
+/* SK Hynix Brand Gradients */
+.bg-sk-gradient {
+  background: linear-gradient(135deg, #EA0029 0%, #FF6A00 100%);
 }
 
-.text-sk-cyber-gradient {
-  background: linear-gradient(135deg, #FF003C 0%, #FF7A00 50%, #FFE600 100%);
+.bg-sk-gradient-hover:hover {
+  background: linear-gradient(135deg, #D00024 0%, #E65F00 100%);
+}
+
+.text-sk-gradient {
+  background: linear-gradient(135deg, #EA0029 0%, #FF6A00 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Cyber Glow Effects */
-.glow-sk-red {
-  box-shadow: 0 0 20px rgba(255, 0, 60, 0.45);
+/* Corporate Clean Panels */
+.sk-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
 }
 
-.glow-sk-yellow {
-  box-shadow: 0 0 20px rgba(255, 230, 0, 0.4);
+.sk-card-elevated {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
 }
 
-.glow-sk-btn {
-  box-shadow: 0 0 15px rgba(255, 0, 60, 0.35), 0 0 30px rgba(255, 106, 0, 0.2);
-}
-.glow-sk-btn:hover {
-  box-shadow: 0 0 25px rgba(255, 0, 60, 0.55), 0 0 40px rgba(255, 230, 0, 0.35);
-}
-
-/* Cyber Glass Panel */
-.cyber-panel {
-  background: rgba(14, 19, 31, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(51, 65, 85, 0.6);
+/* Button Subtle Glow */
+.sk-btn-primary {
+  background: linear-gradient(135deg, #EA0029 0%, #FF6A00 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(234, 0, 41, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cyber-panel-glow {
-  background: rgba(14, 19, 31, 0.9);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 0, 60, 0.25);
-  box-shadow: 0 0 25px rgba(255, 0, 60, 0.08);
+.sk-btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(234, 0, 41, 0.35);
+  transform: translateY(-1px);
 }
 
 /* Custom Scrollbar */
@@ -85,14 +71,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #07090E;
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF003C;
+  background: #94A3B8;
 }
 
 /* Korean Word Break */
@@ -102,7 +88,7 @@ body {
 }
 
 /* ========================================================================= */
-/* 리사이즈 핸들 (사이버펑크 네온 손잡이)                                    */
+/* 리사이즈 핸들 (SK 클린 디자인)                                            */
 /* ========================================================================= */
 .resize-handle {
   user-select: none;
@@ -112,31 +98,30 @@ body {
 }
 
 .resize-handle .handle-bar {
-  opacity: 0.6;
+  opacity: 0.5;
+  background-color: #94A3B8;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* 카드 호버 시 손잡이 바 강조 */
+/* 카드 호버 시 손잡이 바 */
 .task-card:hover .resize-handle .handle-bar {
-  opacity: 0.95;
-  background: linear-gradient(90deg, #FF003C, #FFE600);
-  width: 52px;
+  opacity: 0.9;
+  background-color: #EA0029;
+  width: 48px;
   height: 4px;
-  box-shadow: 0 0 8px rgba(255, 0, 60, 0.6);
 }
 
-/* 손잡이에 직접 마우스 호버 시 네온 발광 */
+/* 손잡이에 직접 마우스 호버 시 */
 .resize-handle:hover {
-  background-color: rgba(255, 0, 60, 0.15);
+  background-color: rgba(234, 0, 41, 0.08);
 }
 
 .resize-handle:hover .handle-bar {
   opacity: 1;
-  background: linear-gradient(90deg, #FF003C, #FFE600);
+  background: linear-gradient(90deg, #EA0029, #FF6A00);
   height: 5px;
-  width: 68px;
-  box-shadow: 0 0 15px rgba(255, 230, 0, 0.8), 0 0 25px rgba(255, 0, 60, 0.6);
+  width: 60px;
+  box-shadow: 0 1px 4px rgba(234, 0, 41, 0.3);
 }
 
 /* ========================================================================= */
@@ -147,12 +132,11 @@ body {
   -webkit-user-select: none;
   transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
   position: absolute;
-  backdrop-filter: blur(8px);
 }
 
 .task-card:hover {
-  border-color: #FF003C !important;
-  box-shadow: 0 0 20px rgba(255, 0, 60, 0.4) !important;
+  border-color: #EA0029 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(234, 0, 41, 0.15) !important;
 }
 
 .task-card:active {
@@ -174,32 +158,32 @@ body {
   overflow: hidden;
 }
 
-/* 마그네틱 레이저 가이드라인 */
+/* 마그네틱 가이드라인 */
 .time-guide-line {
   position: absolute;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #FF003C, #FF7A00, #FFE600);
-  box-shadow: 0 0 12px rgba(255, 0, 60, 0.9), 0 0 20px rgba(255, 230, 0, 0.7);
+  background: #EA0029;
+  box-shadow: 0 1px 6px rgba(234, 0, 41, 0.4);
   z-index: 45;
   pointer-events-none;
 }
 
-/* 실시간 레이저 타임라인 (Neon SK Red) */
+/* 실시간 현재 시간선 */
 .current-time-line {
   position: absolute;
   left: 0;
   right: 0;
   height: 2px;
-  background: #FF003C;
-  box-shadow: 0 0 15px rgba(255, 0, 60, 1), 0 0 30px rgba(255, 0, 60, 0.6);
+  background: #EA0029;
+  box-shadow: 0 1px 4px rgba(234, 0, 41, 0.4);
   z-index: 35;
   pointer-events-none;
 }
 
-/* 쉬머 로딩 (사이버 테마) */
-@keyframes cyberShimmer {
+/* 쉬머 로딩 (클린 화이트 테마) */
+@keyframes cleanShimmer {
   0% {
     background-position: -200% 0;
   }
@@ -208,16 +192,16 @@ body {
   }
 }
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #0F172A 25%, #28111A 37%, #0F172A 63%);
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 37%, #F1F5F9 63%);
   background-size: 200% 100%;
-  animation: cyberShimmer 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: cleanShimmer 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* 페이드인 */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -225,5 +209,5 @@ body {
   }
 }
 .animate-fade-in {
-  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

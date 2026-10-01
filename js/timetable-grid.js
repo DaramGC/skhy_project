@@ -1,5 +1,5 @@
 /**
- * SKHY Timetable Studio - Interactive Timetable Grid Engine
+ * SKHY Timetable Studio - Interactive Timetable Grid Engine (Clean SK Careers Light Theme)
  * 가독성 극대화 및 손쉬운 드래그/리사이징 인터랙션 엔진
  */
 
@@ -8,6 +8,7 @@ const TimetableGrid = (function () {
   const END_HOUR = 22;     // 그리드 종료: 22:00
   const TOTAL_HOURS = END_HOUR - START_HOUR; // 14시간
   const SNAP_MINUTES = 15;  // 스냅 단위 (15분)
+  const TOP_PADDING = 28;   // 상단 여백 (08:00 라벨 및 최상단 블록이 레이아웃과 겹치지 않도록 안전 여백 확보)
   
   // 1시간당 세로 픽셀 높이 (96px: 1분 = 1.6px, 30분 = 48px, 1시간 = 96px)
   let hourHeight = 96;
@@ -140,7 +141,7 @@ const TimetableGrid = (function () {
   }
 
   /**
-   * 전체 타임라인 그리드 렌더링
+   * 전체 타임라인 그리드 렌더링 (SK Careers Clean White 스타일)
    */
   function render(tasks, readOnly = false) {
     currentTasks = tasks || [];
@@ -152,24 +153,27 @@ const TimetableGrid = (function () {
     // 1시간당 높이 비율 재계산
     pxPerMinute = hourHeight / 60;
 
-    // 메인 타임라인 래퍼 (사이버펑크 다크)
+    // 메인 타임라인 래퍼 (클린 화이트 에디션)
     const gridWrapper = document.createElement("div");
-    gridWrapper.className = "relative flex w-full select-none bg-[#090D16] rounded-2xl shadow-2xl border border-slate-800/90 overflow-hidden";
+    gridWrapper.className = "relative flex w-full select-none bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden";
 
-    // 1. 좌측 시간 라벨 컬럼 (더 크고 선명한 사이버 HUD 폰트)
+    // 1. 좌측 시간 라벨 컬럼 (상단 TOP_PADDING 적용으로 08:00 상단 여백 완벽 확보)
     const timeColumn = document.createElement("div");
-    timeColumn.className = "w-24 sm:w-28 flex-shrink-0 border-r border-slate-800/80 bg-[#060910] flex flex-col py-4";
+    timeColumn.className = "w-24 sm:w-28 flex-shrink-0 border-r border-slate-200/90 bg-slate-50/60 relative";
+    timeColumn.style.height = `${TOTAL_HOURS * hourHeight + TOP_PADDING + 28}px`;
 
     for (let h = START_HOUR; h <= END_HOUR; h++) {
+      const topPos = (h - START_HOUR) * hourHeight + TOP_PADDING;
       const hourDiv = document.createElement("div");
-      hourDiv.style.height = `${hourHeight}px`;
-      hourDiv.className = "relative flex items-start justify-center text-xs font-semibold text-slate-500";
+      hourDiv.className = "absolute left-0 right-0 flex items-center justify-center -translate-y-1/2";
+      hourDiv.style.top = `${topPos}px`;
+      
       hourDiv.innerHTML = `
-        <div class="-mt-3.5 flex flex-col items-center bg-[#0F1523] px-2.5 sm:px-3 py-1 rounded-lg border border-amber-500/35 text-amber-300 shadow-[0_0_10px_rgba(255,230,0,0.12)] hover:border-amber-400 transition-colors">
-          <span class="text-xs sm:text-sm font-mono-cyber font-extrabold tracking-wider text-[#FFE600] drop-shadow-xs">
+        <div class="flex flex-col items-center bg-white px-2.5 sm:px-3 py-1 rounded-lg border border-slate-200/90 text-slate-800 shadow-2xs hover:border-[#EA0029]/50 transition-colors">
+          <span class="text-xs sm:text-[13px] font-mono-code font-extrabold tracking-tight text-slate-900">
             ${String(h).padStart(2, "0")}:00
           </span>
-          <span class="text-[9px] font-mono-cyber text-slate-400 font-bold tracking-tight -mt-0.5">
+          <span class="text-[9px] font-mono-code text-slate-400 font-semibold tracking-tight -mt-0.5">
             ${h < 12 ? 'AM' : 'PM'}
           </span>
         </div>
@@ -181,20 +185,22 @@ const TimetableGrid = (function () {
     // 2. 우측 스케줄 인터랙션 그리드 본문
     const scheduleBody = document.createElement("div");
     scheduleBody.id = "timetableScheduleBody";
-    scheduleBody.className = "relative flex-1 py-4 bg-[#0A0E17]";
-    scheduleBody.style.height = `${TOTAL_HOURS * hourHeight + 32}px`;
+    scheduleBody.className = "relative flex-1 bg-white";
+    scheduleBody.style.height = `${TOTAL_HOURS * hourHeight + TOP_PADDING + 28}px`;
 
     // 배경 그리드 가이드라인 (1시간 실선, 30분 점선)
     for (let h = START_HOUR; h < END_HOUR; h++) {
+      const rowTop = (h - START_HOUR) * hourHeight + TOP_PADDING;
       const hourRow = document.createElement("div");
+      hourRow.style.top = `${rowTop}px`;
       hourRow.style.height = `${hourHeight}px`;
-      hourRow.className = "border-b border-slate-800/60 relative group cursor-pointer hover:bg-slate-800/20 transition-colors";
+      hourRow.className = "absolute left-0 right-0 border-b border-slate-100/90 relative group cursor-pointer hover:bg-slate-50/70 transition-colors";
       hourRow.dataset.hour = h;
 
       // 30분 구분선
       const halfHourLine = document.createElement("div");
       halfHourLine.style.top = `${hourHeight / 2}px`;
-      halfHourLine.className = "absolute left-0 right-0 border-b border-dashed border-slate-800/40 pointer-events-none";
+      halfHourLine.className = "absolute left-0 right-0 border-b border-dashed border-slate-100/80 pointer-events-none";
       hourRow.appendChild(halfHourLine);
 
       // 빈 그리드 클릭 시 신규 일정 생성 이벤트
@@ -233,7 +239,7 @@ const TimetableGrid = (function () {
   }
 
   /**
-   * 실시간 현재 시간 표시 라인 (Neon SK Red 레이저)
+   * 실시간 현재 시간 표시 라인 (SK Red)
    */
   function renderCurrentTimeIndicator(body) {
     const now = new Date();
@@ -242,15 +248,15 @@ const TimetableGrid = (function () {
     const endGridM = END_HOUR * 60;
 
     if (currentM >= startGridM && currentM <= endGridM) {
-      const topPx = (currentM - startGridM) * pxPerMinute + 16;
+      const topPx = (currentM - startGridM) * pxPerMinute + TOP_PADDING;
       const line = document.createElement("div");
       line.className = "current-time-line";
       line.style.top = `${topPx}px`;
 
       line.innerHTML = `
-        <div class="absolute -left-1.5 -top-1.5 w-3 h-3 rounded-full bg-[#FF003C] animate-ping"></div>
-        <div class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-[#FF003C]"></div>
-        <span class="absolute left-3 -top-2.5 bg-[#FF003C] text-white font-mono-cyber font-bold text-[10px] px-2 py-0.2 rounded shadow-[0_0_10px_#FF003C]">
+        <div class="absolute -left-1.5 -top-1.5 w-3 h-3 rounded-full bg-[#EA0029] animate-ping opacity-75"></div>
+        <div class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-[#EA0029]"></div>
+        <span class="absolute left-3 -top-2.5 bg-[#EA0029] text-white font-mono-code font-bold text-[10px] px-2 py-0.2 rounded-full shadow-xs">
           ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")} LIVE
         </span>
       `;
@@ -259,7 +265,7 @@ const TimetableGrid = (function () {
   }
 
   /**
-   * 개별 Task 블록 카드 요소 생성 (사이버펑크 네온 다크)
+   * 개별 Task 블록 카드 요소 생성 (SK Careers Clean Card)
    */
   function createTaskCard(task, startGridM, scheduleBody) {
     const card = document.createElement("div");
@@ -271,7 +277,7 @@ const TimetableGrid = (function () {
     const durationText = formatDurationText(startM, endM);
 
     // 위치 및 크기 계산 (최소 높이 46px 보장)
-    const topPx = (startM - startGridM) * pxPerMinute + 16;
+    const topPx = (startM - startGridM) * pxPerMinute + TOP_PADDING;
     const heightPx = Math.max(46, durationM * pxPerMinute);
 
     // 컬럼 분할 너비 및 좌측 여백
@@ -286,7 +292,7 @@ const TimetableGrid = (function () {
 
     // 테마 색상 클래스 적용
     const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
-    card.className = `task-card absolute rounded-xl p-2.5 flex flex-col justify-between border cursor-grab overflow-hidden ${catConfig.bg}`;
+    card.className = `task-card absolute rounded-xl p-2.5 flex flex-col justify-between border cursor-grab overflow-hidden transition-all ${catConfig.bg}`;
 
     // 호버 시 전체 내용 툴팁
     card.title = `[${task.start_time} ~ ${task.end_time} (${durationText})] ${task.task || '일정'}\n• 설명: ${task.summary || '(없음)'}\n• 특이사항: ${task.etc || '(없음)'}`;
@@ -303,31 +309,31 @@ const TimetableGrid = (function () {
       <!-- 상단 리사이즈 핸들 (20px 내부 터치 영역 & 중앙 손잡이 바) -->
       ${!isReadOnly ? `
         <div class="resize-handle top-handle absolute top-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-12 h-1.5 rounded-full"></div>
+          <div class="handle-bar w-12 h-1 rounded-full"></div>
         </div>
       ` : ''}
 
       <!-- 헤더: 시간 + 소요시간 + 카테고리 -->
       <div class="flex items-center justify-between gap-1.5 pl-1.5 pt-1 flex-shrink-0">
         <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-bold font-mono-cyber tracking-tight text-slate-100 flex items-center gap-1">
-            <svg class="w-3 h-3 text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-1">
+            <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             ${task.start_time} - ${task.end_time}
           </span>
-          <span class="text-[10px] font-semibold font-mono-cyber text-amber-300 bg-black/70 px-1.5 py-0.2 rounded border border-amber-500/30">
+          <span class="text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs">
             ${durationText}
           </span>
         </div>
-        ${!isShort ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-xs ${catConfig.badge}">${catConfig.label}</span>` : ''}
+        ${!isShort ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-2xs ${catConfig.badge}">${catConfig.label}</span>` : ''}
       </div>
 
-      <!-- 본문: Task 제목 (네온 고대비, break-keep, 최대 2줄) -->
+      <!-- 본문: Task 제목 (SK Clean Typography, break-keep, 최대 2줄) -->
       <div class="pl-1.5 flex-1 min-h-0 flex flex-col justify-center my-0.5">
-        <div class="font-extrabold text-xs sm:text-[13px] text-white leading-snug line-clamp-2 break-keep drop-shadow-xs">
+        <div class="font-extrabold text-xs sm:text-[13px] text-slate-900 leading-snug line-clamp-2 break-keep">
           ${escapeHtml(task.task || "제목 없는 일정")}
         </div>
         ${isTall && task.summary ? `
-          <div class="text-[11px] text-slate-300 line-clamp-2 break-keep leading-relaxed mt-1">
+          <div class="text-[11px] text-slate-600 line-clamp-2 break-keep leading-relaxed mt-1">
             ${escapeHtml(task.summary)}
           </div>
         ` : ''}
@@ -338,7 +344,7 @@ const TimetableGrid = (function () {
     if (!isShort && task.etc) {
       innerContent += `
         <div class="pl-1.5 pb-0.5 flex items-center gap-1 flex-shrink-0">
-          <span class="text-[10px] font-medium bg-black/80 text-slate-200 px-2 py-0.5 rounded-md border border-slate-700/80 truncate max-w-full shadow-xs">
+          <span class="text-[10px] font-medium bg-white/90 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/90 truncate max-w-full shadow-2xs">
             📍 ${escapeHtml(task.etc)}
           </span>
         </div>
@@ -349,21 +355,21 @@ const TimetableGrid = (function () {
     if (!isReadOnly) {
       innerContent += `
         <div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-12 h-1.5 rounded-full"></div>
+          <div class="handle-bar w-12 h-1 rounded-full"></div>
         </div>
-      `;
-    }
+      ` : ''}
+    `;
 
     card.innerHTML = innerContent;
 
     // 호버 애니메이션
     card.addEventListener("mouseenter", () => {
       card.style.zIndex = "40";
-      card.classList.add("shadow-md", "scale-[1.008]");
+      card.classList.add("shadow-md", "scale-[1.006]");
     });
     card.addEventListener("mouseleave", () => {
       card.style.zIndex = (10 + (task._col || 0)).toString();
-      card.classList.remove("shadow-md", "scale-[1.008]");
+      card.classList.remove("shadow-md", "scale-[1.006]");
     });
 
     // 클릭 시 편집 모달 열기
@@ -386,7 +392,7 @@ const TimetableGrid = (function () {
   }
 
   /**
-   * 카드 드래그 이동 및 상/하단 리사이징 이벤트 바인딩 (초간편 인터랙션)
+   * 카드 드래그 이동 및 상/하단 리사이징 이벤트 바인딩
    */
   function bindDragAndResize(card, task, startGridM, scheduleBody) {
     const topHandle = card.querySelector(".top-handle");
@@ -407,7 +413,7 @@ const TimetableGrid = (function () {
     function showTooltip(text, x, y) {
       if (!tooltip) {
         tooltip = document.createElement("div");
-        tooltip.className = "fixed z-50 bg-slate-900/95 backdrop-blur-md text-white text-xs font-mono font-bold px-3 py-1.5 rounded-xl shadow-2xl pointer-events-none transition-transform border border-slate-700/80";
+        tooltip.className = "fixed z-50 bg-slate-900/90 backdrop-blur-md text-white text-xs font-mono-code font-bold px-3 py-1.5 rounded-xl shadow-xl pointer-events-none transition-transform border border-slate-700/80";
         document.body.appendChild(tooltip);
       }
       tooltip.textContent = text;
@@ -451,11 +457,11 @@ const TimetableGrid = (function () {
       initialStartM = task._startM;
       initialEndM = task._endM;
 
-      card.classList.add("ring-2", "ring-[#EA0029]", "shadow-2xl", "opacity-95");
+      card.classList.add("ring-2", "ring-[#EA0029]", "shadow-lg", "opacity-95");
       card.style.zIndex = "50";
       document.body.style.cursor = dragMode === "move" ? "grabbing" : "row-resize";
 
-      // 포인터 캡처 (마우스가 카드 밖으로 빠르게 벗어나도 완벽히 추적)
+      // 포인터 캡처
       if (e.target && e.target.setPointerCapture) {
         try { e.target.setPointerCapture(e.pointerId); } catch(err) {}
       }
@@ -480,7 +486,7 @@ const TimetableGrid = (function () {
         newStartM = Math.max(START_HOUR * 60, Math.min(END_HOUR * 60 - duration, initialStartM + deltaMinutes));
         newEndM = newStartM + duration;
 
-        const newTop = (newStartM - startGridM) * pxPerMinute + 16;
+        const newTop = (newStartM - startGridM) * pxPerMinute + TOP_PADDING;
         card.style.top = `${newTop}px`;
         showGuideLine(newTop);
       } else if (mode === "resize-bottom") {
@@ -490,7 +496,7 @@ const TimetableGrid = (function () {
         showGuideLine(initialTop + newHeight);
       } else if (mode === "resize-top") {
         newStartM = Math.max(START_HOUR * 60, Math.min(initialEndM - SNAP_MINUTES, initialStartM + deltaMinutes));
-        const newTop = (newStartM - startGridM) * pxPerMinute + 16;
+        const newTop = (newStartM - startGridM) * pxPerMinute + TOP_PADDING;
         const newHeight = Math.max(46, (initialEndM - newStartM) * pxPerMinute);
         card.style.top = `${newTop}px`;
         card.style.height = `${newHeight}px`;
@@ -513,7 +519,7 @@ const TimetableGrid = (function () {
         try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
       }
 
-      card.classList.remove("ring-2", "ring-[#EA0029]", "shadow-2xl", "opacity-95");
+      card.classList.remove("ring-2", "ring-[#EA0029]", "shadow-lg", "opacity-95");
 
       const deltaY = e.clientY - startY;
       const deltaMinutes = snapMinutes(deltaY / pxPerMinute);
