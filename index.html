@@ -180,6 +180,20 @@
           </button>
         </div>
 
+        <!-- 타임라인 줌 배율 조절 (표준 / 확대 / 상세) -->
+        <div id="zoomControlGroup" class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60">
+          <span class="text-[10px] font-bold text-slate-400 px-1.5 hidden sm:inline">ZOOM</span>
+          <button id="zoomNormalBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200" data-height="96" title="표준 1시간 96px">
+            표준
+          </button>
+          <button id="zoomMediumBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800" data-height="136" title="확대 1시간 136px (짧은 일정 더 크게 보기)">
+            확대 (1.4x)
+          </button>
+          <button id="zoomLargeBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800" data-height="180" title="상세 1시간 180px (모든 세부내용 펼쳐보기)">
+            상세 (1.9x)
+          </button>
+        </div>
+
         <!-- 새 일정 추가 버튼 -->
         <button id="addNewTaskBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors">
           <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>

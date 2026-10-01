@@ -298,64 +298,88 @@ const TimetableGrid = (function () {
     card.title = `[${task.start_time} ~ ${task.end_time} (${durationText})] ${task.task || '일정'}\n• 설명: ${task.summary || '(없음)'}\n• 특이사항: ${task.etc || '(없음)'}`;
 
     // 높이 단계 판별 (가독성 분기)
-    const isShort = heightPx < 68;
-    const isMedium = heightPx >= 68 && heightPx < 105;
-    const isTall = heightPx >= 105;
+    const isShort = heightPx < 70;
+    const isMedium = heightPx >= 70 && heightPx < 110;
+    const isTall = heightPx >= 110;
 
     let innerContent = `
       <!-- 좌측 포인트 컬러 바 -->
       <div class="absolute left-0 top-0 bottom-0 w-1.5 ${catConfig.bar}"></div>
 
-      <!-- 상단 리사이즈 핸들 (20px 내부 터치 영역 & 중앙 손잡이 바) -->
+      <!-- 상단 리사이즈 핸들 -->
       ${!isReadOnly ? `
-        <div class="resize-handle top-handle absolute top-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-12 h-1 rounded-full"></div>
+        <div class="resize-handle top-handle absolute top-0 left-0 right-0 h-4 flex items-center justify-center cursor-row-resize z-30">
+          <div class="handle-bar w-10 h-1 rounded-full"></div>
         </div>
       ` : ''}
+    `;
 
-      <!-- 헤더: 시간 + 소요시간 + 카테고리 -->
-      <div class="flex items-center justify-between gap-1.5 pl-1.5 pt-1 flex-shrink-0">
-        <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-1">
-            <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            ${task.start_time} - ${task.end_time}
-          </span>
-          <span class="text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs">
+    if (isShort) {
+      // 1. 짧은 일정 (15분~30분): 가로 인라인 압축 레이아웃으로 모든 필수 정보 한눈에 노출
+      innerContent += `
+        <div class="flex items-center justify-between gap-1.5 pl-2 pr-1 h-full min-h-0">
+          <div class="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+            <span class="text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-0.5 flex-shrink-0">
+              <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              ${task.start_time}-${task.end_time}
+            </span>
+            <span class="text-[10px] font-bold px-1.5 py-0.2 rounded border shadow-2xs ${catConfig.badge} flex-shrink-0">${catConfig.label}</span>
+            <span class="font-extrabold text-xs text-slate-900 truncate min-w-0">${escapeHtml(task.task || "제목 없음")}</span>
+            ${task.summary ? `<span class="text-[11px] text-slate-500 truncate hidden md:inline font-normal">• ${escapeHtml(task.summary)}</span>` : ''}
+            ${task.etc ? `<span class="text-[10px] bg-white/90 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200 truncate hidden xl:inline">📍 ${escapeHtml(task.etc)}</span>` : ''}
+          </div>
+          <span class="text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs flex-shrink-0">
             ${durationText}
           </span>
         </div>
-        ${!isShort ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-2xs ${catConfig.badge}">${catConfig.label}</span>` : ''}
-      </div>
-
-      <!-- 본문: Task 제목 (SK Clean Typography, break-keep, 최대 2줄) -->
-      <div class="pl-1.5 flex-1 min-h-0 flex flex-col justify-center my-0.5">
-        <div class="font-extrabold text-xs sm:text-[13px] text-slate-900 leading-snug line-clamp-2 break-keep">
-          ${escapeHtml(task.task || "제목 없는 일정")}
-        </div>
-        ${isTall && task.summary ? `
-          <div class="text-[11px] text-slate-600 line-clamp-2 break-keep leading-relaxed mt-1">
-            ${escapeHtml(task.summary)}
-          </div>
-        ` : ''}
-      </div>
-    `;
-
-    // 하단부: 특이사항 (etc) 표시
-    if (!isShort && task.etc) {
+      `;
+    } else {
+      // 2. 표준 및 세로 확장 레이아웃
       innerContent += `
-        <div class="pl-1.5 pb-0.5 flex items-center gap-1 flex-shrink-0">
-          <span class="text-[10px] font-medium bg-white/90 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/90 truncate max-w-full shadow-2xs">
-            📍 ${escapeHtml(task.etc)}
-          </span>
+        <!-- 헤더: 시간 + 소요시간 + 카테고리 -->
+        <div class="flex items-center justify-between gap-1.5 pl-1.5 pt-0.5 flex-shrink-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[11px] font-bold font-mono-code tracking-tight text-slate-800 flex items-center gap-1">
+              <svg class="w-3 h-3 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              ${task.start_time} - ${task.end_time}
+            </span>
+            <span class="text-[10px] font-semibold font-mono-code text-slate-600 bg-white/80 px-1.5 py-0.2 rounded border border-slate-200 shadow-2xs">
+              ${durationText}
+            </span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-2xs ${catConfig.badge}">${catConfig.label}</span>
+        </div>
+
+        <!-- 본문: Task 제목 -->
+        <div class="pl-1.5 flex-1 min-h-0 flex flex-col justify-center my-0.5">
+          <div class="font-extrabold text-xs sm:text-[13px] text-slate-900 leading-snug line-clamp-2 break-keep">
+            ${escapeHtml(task.task || "제목 없는 일정")}
+          </div>
+          ${task.summary ? `
+            <div class="text-[11px] text-slate-600 line-clamp-2 break-keep leading-relaxed mt-0.5">
+              ${escapeHtml(task.summary)}
+            </div>
+          ` : ''}
         </div>
       `;
+
+      // 하단부: 특이사항 (etc) 표시
+      if (task.etc && isTall) {
+        innerContent += `
+          <div class="pl-1.5 pb-0.5 flex items-center gap-1 flex-shrink-0">
+            <span class="text-[10px] font-medium bg-white/90 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/90 truncate max-w-full shadow-2xs">
+              📍 ${escapeHtml(task.etc)}
+            </span>
+          </div>
+        `;
+      }
     }
 
     // 하단 리사이즈 핸들
     if (!isReadOnly) {
       innerContent += `
-        <div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center cursor-row-resize z-30">
-          <div class="handle-bar w-12 h-1 rounded-full"></div>
+        <div class="resize-handle bottom-handle absolute bottom-0 left-0 right-0 h-4 flex items-center justify-center cursor-row-resize z-30">
+          <div class="handle-bar w-10 h-1 rounded-full"></div>
         </div>
       `;
     }
@@ -586,11 +610,27 @@ const TimetableGrid = (function () {
       .replace(/'/g, "&#039;");
   }
 
+  function setHourHeight(newHeight) {
+    if (newHeight && newHeight >= 60 && newHeight <= 300) {
+      hourHeight = newHeight;
+      pxPerMinute = hourHeight / 60;
+      if (containerEl && currentTasks) {
+        render(currentTasks, isReadOnly);
+      }
+    }
+  }
+
+  function getHourHeight() {
+    return hourHeight;
+  }
+
   return {
     init,
     render,
     timeToMinutes,
     minutesToTime,
-    formatDurationText
+    formatDurationText,
+    setHourHeight,
+    getHourHeight
   };
 })();
