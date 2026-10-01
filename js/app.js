@@ -152,26 +152,86 @@
   }
 
   /**
-   * 초기 데이터 불러오기
+   * 스켈레톤 로딩 UI 렌더링 (첫 방문 또는 데이터 없을 때 고급 쉬머 효과)
    */
-  async function loadInitialData() {
-    showLoading(true);
+  function renderSkeletonLoading() {
+    // 1. 탭 스켈레톤
+    elements.sheetTabs.innerHTML = `
+      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200/60"></div>
+      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200/60"></div>
+      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200/60"></div>
+    `;
+
+    // 2. 메인 시간표 스켈레톤
+    elements.timetableContainer.innerHTML = `
+      <div class="w-full bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="h-6 w-48 rounded-lg skeleton-shimmer"></div>
+          <div class="h-6 w-32 rounded-lg skeleton-shimmer"></div>
+        </div>
+        <div class="space-y-4 py-2">
+          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-rose-100/70 flex items-center px-6">
+            <div class="h-4 w-1/3 bg-white/70 rounded-md"></div>
+          </div>
+          <div class="h-32 w-full rounded-2xl skeleton-shimmer border border-rose-100/70 flex items-center px-6">
+            <div class="h-4 w-1/2 bg-white/70 rounded-md"></div>
+          </div>
+          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-rose-100/70 flex items-center px-6">
+            <div class="h-4 w-2/5 bg-white/70 rounded-md"></div>
+          </div>
+        </div>
+        <div class="text-center py-2 text-xs font-semibold text-slate-500 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-[#EA0029] animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span class="text-slate-600 font-medium">Google 스프레드시트 실시간 데이터를 안전하게 동기화하고 있습니다...</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 초기 데이터 불러오기 (SWR - Stale While Revalidate 캐시 즉시 렌더링 전략)
+   */
+  async function loadInitialData(isManualRefresh = false) {
+    // 1. 로컬 캐시 확인 (0ms 즉시 화면 표출)
+    const local = SheetsApi.getLocalData();
+    const hasValidCache = local && local.sheets && local.sheets.length > 0;
+
+    if (hasValidCache && !isManualRefresh) {
+      state.sheets = local.sheets;
+      state.currentDate = local.currentDate || new Date().toISOString().split("T")[0];
+      state.activeSheetIndex = 0;
+      renderAll(); // 캐시 데이터로 즉각 렌더링 (체감 대기시간 0초!)
+
+      // 상단 뱃지에 백그라운드 동기화 중 표시
+      elements.connectionBadge.className = "ml-1 sm:ml-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs";
+      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#EA0029] animate-ping"></span> 시트 동기화 중...`;
+    } else {
+      renderSkeletonLoading();
+      showLoading(true);
+    }
+
     try {
+      // 2. 백그라운드에서 최신 Google Sheet 데이터 조회
       const res = await SheetsApi.fetchSheetsData();
       state.sheets = res.data.sheets || [];
       state.currentDate = res.data.currentDate || "2026-10-01";
-      state.activeSheetIndex = 0;
-
-      if (res.source === "google") {
-        showToast("구글 스프레드시트(timetable)에서 데이터를 성공적으로 불러왔습니다.", "success");
-      } else {
-        showToast("디버깅용 Mock 데이터를 불러왔습니다. 자유롭게 수정해보세요!", "info");
+      
+      if (state.activeSheetIndex >= state.sheets.length) {
+        state.activeSheetIndex = 0;
       }
 
       renderAll();
+      updateConnectionBadge();
+
+      if (isManualRefresh) {
+        showToast("구글 스프레드시트에서 최신 데이터를 새로고침했습니다.", "success", 2500);
+      }
     } catch (e) {
       console.error(e);
-      showToast("데이터 로드 중 오류가 발생했습니다: " + e.message, "error");
+      updateConnectionBadge();
+      if (!hasValidCache) {
+        showToast("데이터 로드 중 오류가 발생했습니다: " + e.message, "error");
+      }
     } finally {
       showLoading(false);
     }
@@ -182,7 +242,7 @@
    */
   async function refreshData() {
     if (confirm("원본 스프레드시트에서 데이터를 다시 불러오시겠습니까? 현재 저장되지 않은 로컬 수정사항은 덮어씌워질 수 있습니다.")) {
-      await loadInitialData();
+      await loadInitialData(true);
     }
   }
 

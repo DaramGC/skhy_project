@@ -164,6 +164,21 @@ body {
   animation: pulseGlow 2s infinite;
 }
 
+/* 스켈레톤 쉬머 애니메이션 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f8fafc 25%, #ffe4e6 37%, #f8fafc 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* 부드러운 페이드인 */
 @keyframes fadeIn {
   from {
@@ -178,3 +193,4 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+

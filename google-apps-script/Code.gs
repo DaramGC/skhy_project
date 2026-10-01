@@ -109,10 +109,12 @@ function readAllSheetsFromSource() {
   for (let i = 0; i < sheets.length; i++) {
     const sheet = sheets[i];
     const sheetName = sheet.getName();
-    const lastRow = sheet.getLastRow();
-    const lastCol = sheet.getLastColumn();
+    
+    // getDataRange()로 단 1번의 API 호출을 통해 전체 데이터 취득 (성능 대폭 향상)
+    const dataRange = sheet.getDataRange();
+    const values = dataRange.getValues();
 
-    if (lastRow < 2 || lastCol < 1) {
+    if (!values || values.length < 2) {
       result.push({
         sheetName: sheetName,
         status: "draft",
@@ -121,8 +123,6 @@ function readAllSheetsFromSource() {
       continue;
     }
 
-    // 헤더 및 데이터 가져오기
-    const values = sheet.getRange(1, 1, lastRow, lastCol).getValues();
     const headers = values[0].map(h => String(h).trim().toLowerCase());
     
     // 컬럼 인덱스 매핑
