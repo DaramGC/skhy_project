@@ -193,11 +193,11 @@
    * 스켈레톤 로딩 UI 렌더링 (클린 쉬머 효과)
    */
   function renderSkeletonLoading() {
-    // 1. 탭 스켈레톤
+    // 1. 좌측 탭 세로 스켈레톤
     elements.sheetTabs.innerHTML = `
-      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200"></div>
-      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200"></div>
-      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200"></div>
+      <div class="h-14 w-full rounded-xl skeleton-shimmer border border-slate-200"></div>
+      <div class="h-14 w-full rounded-xl skeleton-shimmer border border-slate-200"></div>
+      <div class="h-14 w-full rounded-xl skeleton-shimmer border border-slate-200"></div>
     `;
 
     // 2. 메인 시간표 스켈레톤
@@ -302,7 +302,7 @@
   }
 
   /**
-   * 상단 대형 날짜 헤더 렌더링 (SK Careers 포맷)
+   * 상단 대형 날짜 헤더 렌더링 (단일 TODAY 배지 및 요일 표출)
    */
   function renderDateHeader() {
     const curDate = new Date(state.currentDate);
@@ -313,11 +313,11 @@
     const dayIdx = curDate.getDay();
 
     elements.dateTitle.textContent = `${y}. ${m}. ${d}`;
-    elements.dayOfWeekBadge.textContent = `${days[dayIdx]}요일 (TODAY)`;
+    elements.dayOfWeekBadge.textContent = `${days[dayIdx]}요일`;
   }
 
   /**
-   * 상단 시트/개인 탭 바 렌더링 (클린 화이트 에디션)
+   * 좌측 사이드바 팀원 / 개인별 탭 목록 렌더링 (세로 정렬)
    */
   function renderSheetTabs() {
     elements.sheetTabs.innerHTML = "";
@@ -327,27 +327,30 @@
       const isCompleted = sheet.status === "completed";
 
       const tab = document.createElement("button");
-      tab.className = `group flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
+      tab.className = `group w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm transition-all duration-150 ${
         isActive
-          ? "bg-white text-[#EA0029] shadow-xs border border-slate-200/90 ring-2 ring-[#EA0029]/20 font-bold"
-          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-transparent"
+          ? "bg-rose-50/80 text-[#EA0029] border border-rose-200 shadow-2xs ring-2 ring-[#EA0029]/20 font-bold"
+          : "bg-slate-50/60 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200/80 font-semibold"
       }`;
 
       // 상태 아이콘 & 뱃지
       const statusIcon = isCompleted
-        ? `<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>`
-        : `<span class="h-2 w-2 rounded-full bg-[#EA0029]"></span>`;
+        ? `<span class="flex h-2.5 w-2.5 relative flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span>`
+        : `<span class="h-2.5 w-2.5 rounded-full bg-[#EA0029] flex-shrink-0"></span>`;
 
       const taskCount = (sheet.data || []).length;
 
       tab.innerHTML = `
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-2.5 min-w-0">
           ${statusIcon}
-          <span class="truncate max-w-[130px]">👤 ${escapeHtml(sheet.sheetName)}</span>
+          <div class="flex flex-col items-start min-w-0">
+            <span class="truncate font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#EA0029]">${escapeHtml(sheet.sheetName)}</span>
+            <span class="text-[10px] ${isCompleted ? 'text-emerald-600 font-semibold' : 'text-slate-400 font-normal'}">${isCompleted ? '확정 완료' : '수정 진행 중'}</span>
+          </div>
         </div>
-        <span class="px-1.5 py-0.2 rounded-md text-[11px] font-mono-code ${
-          isActive ? "bg-rose-50 text-[#EA0029] font-bold" : "bg-slate-100 text-slate-500"
-        }">${taskCount}</span>
+        <span class="px-2 py-0.5 rounded-lg text-xs font-mono-code font-bold ${
+          isActive ? "bg-white text-[#EA0029] border border-rose-200 shadow-2xs" : "bg-white text-slate-500 border border-slate-200"
+        }">${taskCount}개</span>
       `;
 
       tab.addEventListener("click", () => {

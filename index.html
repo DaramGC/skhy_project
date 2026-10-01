@@ -83,33 +83,36 @@
   </header>
 
   <!-- ========================================================================= -->
-  <!-- 2. 오늘 일정 & 실시간 시계 배너 (SK Careers 깔끔한 디자인)                 -->
+  <!-- 2. 오늘 일정 & 실시간 시계 배너 (SK Careers 스타일 단일 통합 디자인)        -->
   <!-- ========================================================================= -->
-  <section class="bg-white border-b border-slate-200/80 py-5 sm:py-6">
+  <section class="bg-white border-b border-slate-200/80 py-4">
     <div class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-10">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         
-        <!-- 대형 날짜 및 당일 표시부 -->
-        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-          <div class="flex items-baseline gap-2.5 sm:gap-3">
-            <span class="text-xs font-bold text-[#EA0029] tracking-wider uppercase">[ TODAY ]</span>
-            <span id="dateTitle" class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 font-mono-code">2026. 10. 01</span>
-            <span id="dayOfWeekBadge" class="text-xs sm:text-sm font-bold px-3 py-1 rounded-lg text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] shadow-2xs">
-              목요일 (TODAY)
+        <!-- 날짜 및 실시간 시계 통합 바 -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- 당일 날짜 & 요일 (단일 TODAY 배지) -->
+          <div class="inline-flex items-center gap-2.5 bg-slate-50 border border-slate-200/90 rounded-xl px-3.5 py-2 shadow-2xs">
+            <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] tracking-wider uppercase shadow-2xs">
+              TODAY
+            </span>
+            <span id="dateTitle" class="text-lg sm:text-xl font-black text-slate-900 font-mono-code tracking-tight">2026. 10. 01</span>
+            <span id="dayOfWeekBadge" class="text-xs font-bold text-slate-700 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">
+              목요일
             </span>
           </div>
 
-          <!-- 실시간 디지털 시계 -->
-          <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-2xs">
-            <span class="w-2 h-2 rounded-full bg-[#EA0029] animate-ping"></span>
-            <span class="text-[10px] font-bold text-slate-500">LIVE CLOCK</span>
+          <!-- 실시간 시계 (통일된 스타일) -->
+          <div class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200/90 rounded-xl px-3.5 py-2 shadow-2xs">
+            <span class="w-2 h-2 rounded-full bg-[#EA0029] animate-pulse"></span>
+            <span class="text-xs font-semibold text-slate-500">실시간</span>
             <span id="liveClockDisplay" class="text-xs sm:text-sm font-mono-code font-bold text-slate-900 tracking-tight">00:00:00 KST</span>
           </div>
         </div>
 
         <!-- 전체 현황 요약 칩 -->
         <div class="flex items-center gap-3">
-          <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200/90 shadow-2xs flex items-center gap-2.5">
+          <div class="bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200/90 shadow-2xs flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full bg-[#EA0029]"></span>
             <span class="text-xs text-slate-500 font-semibold">전체 팀원 확정 현황:</span>
             <span id="statOverallProgress" class="text-xs font-bold font-mono-code text-[#EA0029]">0 / 0명 완료</span>
@@ -121,136 +124,143 @@
   </section>
 
   <!-- ========================================================================= -->
-  <!-- 3. 개인별 / 시트별 탭 네비게이션                                          -->
+  <!-- 3. 메인 작업 영역 (좌측: 팀원 목록 사이드바 / 우측: 타임라인 및 작업공간)   -->
   <!-- ========================================================================= -->
-  <section class="bg-white border-b border-slate-200/80 sticky top-16 z-20 shadow-2xs">
-    <div class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-10">
-      <div class="flex items-center justify-between py-2.5 overflow-x-auto gap-2">
-        
-        <!-- 시트 탭 목록 컨테이너 -->
-        <div id="sheetTabs" class="flex items-center gap-2 flex-nowrap">
-          <!-- JS로 동적 렌더링 -->
-        </div>
-
-        <!-- 시트 추가 버튼 -->
-        <button id="addSheetBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-[#EA0029] bg-slate-50 hover:bg-rose-50 border border-dashed border-slate-300 hover:border-[#EA0029] transition-colors flex-shrink-0" title="새 개인/시트 추가">
-          <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          <span>시트 추가</span>
-        </button>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 4. 선택된 개인 대시보드 & 액션 툴바                                      -->
-  <!-- ========================================================================= -->
-  <section class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-10 pt-6 pb-4 w-full">
-    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+  <main class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-10 py-6 flex-1 w-full">
+    <div class="flex flex-col lg:flex-row items-start gap-6">
       
-      <!-- 좌측: 개인 정보 및 상태 -->
-      <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-        <div class="flex items-center gap-2">
-          <span class="text-xl sm:text-2xl font-black text-slate-900" id="activePersonName">홍길동</span>
-          <span class="text-xs sm:text-sm font-semibold text-slate-500">연구원님의 시간표</span>
+      <!-- [좌측 사이드바] 팀원 / 개인별 시트 목록 (세로 아래로 정렬) -->
+      <aside class="w-full lg:w-72 xl:w-80 flex-shrink-0 bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 flex flex-col gap-3">
+        <!-- 사이드바 헤더 -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#EA0029]"></span>
+              팀원 목록
+            </h2>
+            <p class="text-[11px] text-slate-400 font-medium mt-0.5">선택하여 일정 확인 및 편집</p>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded-md">SHEETS</span>
         </div>
 
-        <!-- 상태 뱃지 (수정 중 / 완료됨) -->
-        <div id="personStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs">
-          <span>수정 진행 중</span>
+        <!-- 세로 팀원 탭 목록 컨테이너 -->
+        <div id="sheetTabs" class="flex flex-col gap-2 w-full">
+          <!-- JS로 세로 목록 동적 렌더링 -->
         </div>
 
-        <!-- 미니 통계 -->
-        <div class="flex items-center gap-3 text-xs text-slate-600 border-l border-slate-200 pl-3">
-          <div>일정 <span id="statTaskCount" class="font-bold text-slate-900 font-mono-code">0개</span></div>
-          <div>총 업무시간 <span id="statTotalHours" class="font-bold text-[#EA0029] font-mono-code">0시간</span></div>
-        </div>
-      </div>
+        <!-- 새 팀원/시트 추가 버튼 -->
+        <button id="addSheetBtn" type="button" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-[#EA0029] bg-slate-50 hover:bg-rose-50 border border-dashed border-slate-300 hover:border-[#EA0029] transition-all mt-1" title="새 개인/시트 추가">
+          <svg class="w-4 h-4 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+          <span>새 팀원 시트 추가</span>
+        </button>
+      </aside>
 
-      <!-- 우측: 핵심 액션 버튼 -->
-      <div class="flex flex-wrap items-center gap-2.5">
+      <!-- [우측 메인 영역] 선택된 팀원 툴바 및 타임라인 / 테이블 뷰 -->
+      <div class="flex-1 w-full min-w-0 flex flex-col gap-4">
         
-        <!-- 뷰 전환 (그리드 / 테이블) -->
-        <div class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60">
-          <button id="viewGridBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200">
-            타임라인 뷰
-          </button>
-          <button id="viewTableBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800">
-            테이블 뷰
-          </button>
+        <!-- 상단 대시보드 툴바 -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          
+          <!-- 좌측: 선택된 팀원 정보 및 상태 -->
+          <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div class="flex items-center gap-2">
+              <span class="text-xl sm:text-2xl font-black text-slate-900" id="activePersonName">홍길동</span>
+              <span class="text-xs sm:text-sm font-semibold text-slate-500">연구원님의 시간표</span>
+            </div>
+
+            <!-- 상태 뱃지 (수정 중 / 완료됨) -->
+            <div id="personStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs">
+              <span>수정 진행 중</span>
+            </div>
+
+            <!-- 미니 통계 -->
+            <div class="flex items-center gap-3 text-xs text-slate-600 border-l border-slate-200 pl-3">
+              <div>일정 <span id="statTaskCount" class="font-bold text-slate-900 font-mono-code">0개</span></div>
+              <div>총 업무시간 <span id="statTotalHours" class="font-bold text-[#EA0029] font-mono-code">0시간</span></div>
+            </div>
+          </div>
+
+          <!-- 우측: 핵심 액션 버튼 (뷰 전환 / 줌 / 추가 / 확정) -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            
+            <!-- 뷰 전환 (그리드 / 테이블) -->
+            <div class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60">
+              <button id="viewGridBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200">
+                타임라인 뷰
+              </button>
+              <button id="viewTableBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800">
+                테이블 뷰
+              </button>
+            </div>
+
+            <!-- 타임라인 줌 배율 조절 (표준 / 확대 / 상세) -->
+            <div id="zoomControlGroup" class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60">
+              <span class="text-[10px] font-bold text-slate-400 px-1.5 hidden sm:inline">ZOOM</span>
+              <button id="zoomNormalBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200" data-height="96" title="표준 1시간 96px">
+                표준
+              </button>
+              <button id="zoomMediumBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800" data-height="136" title="확대 1시간 136px (짧은 일정 더 크게 보기)">
+                확대 (1.4x)
+              </button>
+              <button id="zoomLargeBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800" data-height="180" title="상세 1시간 180px (모든 세부내용 펼쳐보기)">
+                상세 (1.9x)
+              </button>
+            </div>
+
+            <!-- 새 일정 추가 버튼 -->
+            <button id="addNewTaskBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors">
+              <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+              <span>새 일정 추가</span>
+            </button>
+
+            <!-- 핵심: 개인별 시간표 확정 버튼 -->
+            <button id="toggleCompleteBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-md shadow-[#EA0029]/25 hover:shadow-lg hover:shadow-[#EA0029]/35 transition-all transform hover:-translate-y-0.5">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+              <span>일정 확정</span>
+            </button>
+
+          </div>
+
         </div>
 
-        <!-- 타임라인 줌 배율 조절 (표준 / 확대 / 상세) -->
-        <div id="zoomControlGroup" class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60">
-          <span class="text-[10px] font-bold text-slate-400 px-1.5 hidden sm:inline">ZOOM</span>
-          <button id="zoomNormalBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-2xs border border-slate-200" data-height="96" title="표준 1시간 96px">
-            표준
-          </button>
-          <button id="zoomMediumBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800" data-height="136" title="확대 1시간 136px (짧은 일정 더 크게 보기)">
-            확대 (1.4x)
-          </button>
-          <button id="zoomLargeBtn" type="button" class="zoom-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800" data-height="180" title="상세 1시간 180px (모든 세부내용 펼쳐보기)">
-            상세 (1.9x)
-          </button>
+        <!-- 타임라인 그리드 뷰 (인터랙티브 드래그/리사이징) -->
+        <div id="timetableContainer" class="w-full">
+          <!-- js/timetable-grid.js 로 동적 렌더링 -->
         </div>
 
-        <!-- 새 일정 추가 버튼 -->
-        <button id="addNewTaskBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors">
-          <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-          <span>새 일정 추가</span>
-        </button>
-
-        <!-- 핵심: 개인별 시간표 확정 버튼 -->
-        <button id="toggleCompleteBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-md shadow-[#EA0029]/25 hover:shadow-lg hover:shadow-[#EA0029]/35 transition-all transform hover:-translate-y-0.5">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-          <span>일정 확정</span>
-        </button>
+        <!-- 테이블 뷰 (스프레드시트 행 인라인 편집 스타일) -->
+        <div id="tableViewContainer" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/90 border-b border-slate-200 text-xs font-bold text-slate-700">
+                  <th class="py-3.5 px-4 font-mono-code w-28">시작시간</th>
+                  <th class="py-3.5 px-4 font-mono-code w-28">종료시간</th>
+                  <th class="py-3.5 px-4 w-60">업무 명칭</th>
+                  <th class="py-3.5 px-4 w-32">분류</th>
+                  <th class="py-3.5 px-4">업무 상세 설명</th>
+                  <th class="py-3.5 px-4 w-56">특이사항 / 장소 / 메모</th>
+                  <th class="py-3.5 px-4 text-right w-24">작업</th>
+                </tr>
+              </thead>
+              <tbody id="tableTbody" class="divide-y divide-slate-100 text-xs">
+                <!-- JS 동적 렌더링 -->
+              </tbody>
+            </table>
+          </div>
+          <!-- 테이블 하단 신규 행 추가 바 -->
+          <div class="p-3 bg-slate-50/70 border-t border-slate-200 flex items-center justify-between">
+            <button id="tableAddRowBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-[#EA0029] bg-white hover:bg-rose-50 border border-slate-200 hover:border-[#EA0029] shadow-2xs transition-colors">
+              <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+              <span>새 일정 행 추가</span>
+            </button>
+            <span class="text-[11px] text-slate-500 font-medium">💡 테이블의 각 칸을 직접 클릭하여 바로 수정할 수 있습니다.</span>
+          </div>
+        </div>
 
       </div>
 
     </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 5. 메인 콘텐츠 영역 (시간표 그리드 / 테이블 뷰)                          -->
-  <!-- ========================================================================= -->
-  <main class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-10 pb-12 flex-1 w-full">
-    
-    <!-- 타임라인 그리드 뷰 (인터랙티브 드래그/리사이징) -->
-    <div id="timetableContainer" class="w-full">
-      <!-- js/timetable-grid.js 로 동적 렌더링 -->
-    </div>
-
-    <!-- 테이블 뷰 (스프레드시트 행 인라인 편집 스타일) -->
-    <div id="tableViewContainer" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-slate-50/90 border-b border-slate-200 text-xs font-bold text-slate-700">
-              <th class="py-3.5 px-4 font-mono-code w-28">시작시간</th>
-              <th class="py-3.5 px-4 font-mono-code w-28">종료시간</th>
-              <th class="py-3.5 px-4 w-60">업무 명칭</th>
-              <th class="py-3.5 px-4 w-32">분류</th>
-              <th class="py-3.5 px-4">업무 상세 설명</th>
-              <th class="py-3.5 px-4 w-56">특이사항 / 장소 / 메모</th>
-              <th class="py-3.5 px-4 text-right w-24">작업</th>
-            </tr>
-          </thead>
-          <tbody id="tableTbody" class="divide-y divide-slate-100 text-xs">
-            <!-- JS 동적 렌더링 -->
-          </tbody>
-        </table>
-      </div>
-      <!-- 테이블 하단 신규 행 추가 바 -->
-      <div class="p-3 bg-slate-50/70 border-t border-slate-200 flex items-center justify-between">
-        <button id="tableAddRowBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-[#EA0029] bg-white hover:bg-rose-50 border border-slate-200 hover:border-[#EA0029] shadow-2xs transition-colors">
-          <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-          <span>새 일정 행 추가</span>
-        </button>
-        <span class="text-[11px] text-slate-500 font-medium">💡 테이블의 각 칸을 직접 클릭하여 바로 수정할 수 있습니다.</span>
-      </div>
-    </div>
-
   </main>
 
   <!-- ========================================================================= -->
