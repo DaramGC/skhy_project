@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,69 +8,73 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             sk: {
-              red: '#EA0029',
+              red: '#FF003C',
+              crimson: '#EA0029',
               orange: '#FF6A00',
-              dark: '#0F172A',
+              yellow: '#FFE600',
+              bg: '#07090E',
+              panel: '#0E131F',
+              border: '#1E293B',
             }
           }
         }
       }
     }
   </script>
-  <!-- Custom CSS -->
+  <!-- Custom CSS (Fonts, Cyberpunk effects, Neon Glows) -->
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-slate-50/70 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-[#EA0029] selection:text-white">
+<body class="bg-[#07090E] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-[#FF003C] selection:text-white">
 
   <!-- ========================================================================= -->
-  <!-- 1. 최상단 헤더 네비게이션 (SK hynix High-Tech Styling)                    -->
+  <!-- 1. 최상단 네비게이션 헤더 (SK hynix Cyberpunk Dark HUD)                     -->
   <!-- ========================================================================= -->
-  <header class="bg-white/95 border-b border-slate-200/90 sticky top-0 z-30 shadow-xs backdrop-blur-md">
+  <header class="bg-[#0B0F19]/90 border-b border-slate-800/80 sticky top-0 z-30 shadow-lg shadow-black/40 backdrop-blur-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
-      <!-- 좌측: SK hynix 로고 & 프로젝트 타이틀 -->
+      <!-- 좌측: SK hynix 로고 & 사이버펑크 타이틀 -->
       <div class="flex items-center gap-3.5">
-        <!-- SK hynix 행복날개 심볼 그래픽 -->
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#EA0029] to-[#FF6A00] flex items-center justify-center text-white shadow-md shadow-[#EA0029]/20 transform hover:scale-105 transition-transform flex-shrink-0">
+        <!-- SK hynix 네온 행복날개 칩 그래픽 -->
+        <div class="w-10 h-10 rounded-xl bg-sk-cyber-gradient flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,0,60,0.5)] transform hover:scale-105 transition-transform flex-shrink-0">
           <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <!-- 반도체 칩 & 날개 형상 -->
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 7h10v10H7z" />
             <circle cx="12" cy="12" r="2" fill="currentColor" />
           </svg>
         </div>
         <div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-black text-slate-900 tracking-tight text-base sm:text-lg">SK hynix</span>
-            <span class="font-extrabold text-[#EA0029] text-base sm:text-lg">Timetable Studio</span>
+          <div class="flex items-center gap-2">
+            <span class="font-black text-white font-cyber tracking-tight text-base sm:text-lg">SK hynix</span>
+            <span class="font-extrabold text-sk-cyber-gradient font-cyber text-base sm:text-lg">Timetable Studio</span>
           </div>
-          <p class="text-[11px] text-slate-500 font-medium hidden sm:block">스프레드시트 실시간 동기화 & 시간표 관리 허브</p>
+          <p class="text-[11px] text-slate-400 font-medium hidden sm:block">실시간 구글 시트 동기화 & 차세대 시간표 제어 시스템</p>
         </div>
-        <!-- 연결 상태 뱃지 -->
-        <div id="connectionBadge" class="ml-1 sm:ml-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Google 시트 연결됨
+        <!-- 연결 상태 뱃지 (Cyber HUD) -->
+        <div id="connectionBadge" class="ml-1 sm:ml-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono-cyber font-bold bg-[#07241A] text-emerald-300 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Google 시트 연결됨
         </div>
       </div>
 
       <!-- 우측: 액션 버튼 그룹 -->
       <div class="flex items-center gap-2 sm:gap-2.5">
         <!-- 새로고침 버튼 -->
-        <button id="refreshDataBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200/90 shadow-2xs" title="원본 timetable 시트에서 다시 불러오기">
+        <button id="refreshDataBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-[#0E131F] hover:bg-[#161F33] transition-all border border-slate-700/80 hover:border-slate-500 shadow-sm" title="원본 timetable 시트에서 최신 데이터 다시 불러오기">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
           <span class="hidden md:inline">새로고침</span>
         </button>
 
         <!-- Google 연동 설정 모달 열기 -->
-        <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200/90 shadow-2xs">
+        <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-[#0E131F] hover:bg-[#161F33] transition-all border border-slate-700/80 hover:border-slate-500 shadow-sm" title="Google Apps Script 연동 설정">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
           <span class="hidden md:inline">연동 설정</span>
         </button>
 
         <!-- 최종 전체 저장 버튼 (timetable_fixed) -->
-        <button id="saveFixedBtn" class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-md shadow-[#EA0029]/25 hover:shadow-lg hover:shadow-[#EA0029]/35 transition-all transform hover:-translate-y-0.5">
+        <button id="saveFixedBtn" class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-white bg-sk-cyber-gradient hover:opacity-90 glow-sk-btn transition-all transform hover:-translate-y-0.5">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
           <span>timetable_fixed 전체 저장</span>
         </button>
@@ -80,43 +84,39 @@
   </header>
 
   <!-- ========================================================================= -->
-  <!-- 2. 대형 날짜 헤더 섹션 (SK Red-Orange 테마)                               -->
+  <!-- 2. Cyberpunk Date & Live HUD Banner (오늘 일정 전용 + 실시간 시계)         -->
   <!-- ========================================================================= -->
-  <section class="bg-gradient-to-r from-rose-50/70 via-white to-amber-50/50 border-b border-slate-200/80 py-6 sm:py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section class="bg-gradient-to-r from-[#14060B] via-[#0B0F19] to-[#140E04] border-b border-slate-800/80 py-5 sm:py-6 relative overflow-hidden">
+    <!-- 배경 네온 라인 효과 -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(255,0,60,0.15),rgba(255,230,0,0.05),transparent)] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         
-        <!-- 대형 날짜 표시부 -->
-        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-          <div class="flex items-baseline gap-2.5 sm:gap-3">
-            <span id="dateTitle" class="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 font-mono">2026년 10월 01일</span>
-            <span id="dayOfWeekBadge" class="text-xs sm:text-sm font-bold px-3 py-1 rounded-lg text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] shadow-xs">
-              목요일
+        <!-- 대형 날짜 및 당일 HUD 표시부 -->
+        <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+          <div class="flex items-baseline gap-3">
+            <span class="text-xs font-mono-cyber font-bold text-[#FF003C] tracking-widest uppercase">[ TODAY SCHEDULE ]</span>
+            <span id="dateTitle" class="text-2xl sm:text-3xl font-black tracking-tight text-white font-cyber drop-shadow-md">2026. 10. 01</span>
+            <span id="dayOfWeekBadge" class="text-xs font-bold font-cyber px-2.5 py-1 rounded-lg text-white bg-sk-cyber-gradient shadow-[0_0_10px_rgba(255,0,60,0.4)]">
+              THURSDAY (목)
             </span>
           </div>
-          
-          <!-- 날짜 네비게이션 컨트롤 -->
-          <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-2xs">
-            <button id="prevDayBtn" class="p-1.5 hover:bg-rose-50 hover:text-[#EA0029] rounded-lg text-slate-600 transition-colors" title="이전 날짜">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <button id="todayBtn" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-700 hover:bg-rose-50 hover:text-[#EA0029] transition-colors">오늘</button>
-            <button id="nextDayBtn" class="p-1.5 hover:bg-rose-50 hover:text-[#EA0029] rounded-lg text-slate-600 transition-colors" title="다음 날짜">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </button>
-            <label class="p-1.5 hover:bg-rose-50 hover:text-[#EA0029] rounded-lg text-slate-600 cursor-pointer transition-colors relative" title="달력에서 선택">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-              <input type="date" id="datePickerInput" class="opacity-0 absolute inset-0 cursor-pointer">
-            </label>
+
+          <!-- 실시간 디지털 시계 HUD -->
+          <div class="flex items-center gap-2 bg-[#060910] border border-amber-500/40 rounded-xl px-3 py-1.5 shadow-[0_0_12px_rgba(255,230,0,0.15)]">
+            <span class="w-2 h-2 rounded-full bg-[#FFE600] animate-ping"></span>
+            <span class="text-[10px] font-mono-cyber text-slate-400 font-semibold">LIVE CLOCK</span>
+            <span id="liveClockDisplay" class="text-xs sm:text-sm font-mono-cyber font-bold text-[#FFE600] tracking-wider">00:00:00 KST</span>
           </div>
         </div>
 
         <!-- 전체 현황 요약 칩 -->
         <div class="flex items-center gap-3">
-          <div class="bg-white px-4 py-2 rounded-xl border border-slate-200/90 shadow-2xs flex items-center gap-2.5">
-            <span class="w-2 h-2 rounded-full bg-[#EA0029]"></span>
-            <span class="text-xs text-slate-500 font-semibold">전체 팀원 완료 현황:</span>
-            <span id="statOverallProgress" class="text-xs font-bold font-mono text-[#EA0029]">0 / 0명 완료</span>
+          <div class="bg-[#0E131F] px-4 py-2 rounded-xl border border-slate-800/90 shadow-md flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-[#FF003C] shadow-[0_0_8px_#FF003C]"></span>
+            <span class="text-xs text-slate-400 font-semibold font-cyber">전체 팀원 확정 현황:</span>
+            <span id="statOverallProgress" class="text-xs font-bold font-mono-cyber text-[#FFE600] drop-shadow-xs">0 / 0명 완료</span>
           </div>
         </div>
 
@@ -127,7 +127,7 @@
   <!-- ========================================================================= -->
   <!-- 3. 개인별 / 시트별 탭 네비게이션                                          -->
   <!-- ========================================================================= -->
-  <section class="bg-white border-b border-slate-200/80 sticky top-16 z-20 shadow-2xs">
+  <section class="bg-[#0B0F19]/80 border-b border-slate-800/80 sticky top-16 z-20 backdrop-blur-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between py-2.5 overflow-x-auto gap-2">
         
@@ -137,8 +137,8 @@
         </div>
 
         <!-- 시트 추가 버튼 -->
-        <button id="addSheetBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-[#EA0029] bg-slate-50 hover:bg-rose-50 border border-dashed border-slate-300 hover:border-[#EA0029] transition-colors flex-shrink-0" title="새 개인/시트 추가">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <button id="addSheetBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-[#0E131F] hover:bg-[#161F33] border border-dashed border-slate-700 hover:border-[#FF003C] transition-all flex-shrink-0" title="새 개인/시트 추가">
+          <svg class="w-3.5 h-3.5 text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           <span>시트 추가</span>
         </button>
 
@@ -150,24 +150,24 @@
   <!-- 4. 선택된 개인 대시보드 & 액션 툴바                                      -->
   <!-- ========================================================================= -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 w-full">
-    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="cyber-panel-glow rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       
       <!-- 좌측: 개인 정보 및 상태 -->
       <div class="flex flex-wrap items-center gap-3 sm:gap-4">
         <div class="flex items-center gap-2">
-          <span class="text-xl sm:text-2xl font-black text-slate-900" id="activePersonName">홍길동</span>
-          <span class="text-xs sm:text-sm font-semibold text-slate-500">연구원님의 시간표</span>
+          <span class="text-xl sm:text-2xl font-black text-white font-cyber" id="activePersonName">홍길동</span>
+          <span class="text-xs sm:text-sm font-semibold text-slate-400">연구원님의 시간표</span>
         </div>
 
         <!-- 상태 뱃지 (수정 중 / 완료됨) -->
-        <div id="personStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs">
+        <div id="personStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-cyber bg-[#2A0812] text-[#FF4D6D] border border-rose-500/40 shadow-xs">
           <span>수정 진행 중</span>
         </div>
 
         <!-- 미니 통계 -->
-        <div class="flex items-center gap-3 text-xs text-slate-600 border-l border-slate-200 pl-3">
-          <div>일정 <span id="statTaskCount" class="font-bold text-slate-900 font-mono">0개</span></div>
-          <div>총 업무시간 <span id="statTotalHours" class="font-bold text-[#EA0029] font-mono">0시간</span></div>
+        <div class="flex items-center gap-3 text-xs text-slate-400 border-l border-slate-800 pl-3">
+          <div>일정 <span id="statTaskCount" class="font-bold text-white font-mono-cyber">0개</span></div>
+          <div>총 업무시간 <span id="statTotalHours" class="font-bold text-[#FFE600] font-mono-cyber">0시간</span></div>
         </div>
       </div>
 
@@ -175,23 +175,23 @@
       <div class="flex flex-wrap items-center gap-2.5">
         
         <!-- 뷰 전환 (그리드 / 테이블) -->
-        <div class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60">
-          <button id="viewGridBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#EA0029] shadow-xs border border-slate-200">
+        <div class="bg-[#07090E] p-1 rounded-xl flex items-center gap-1 border border-slate-800">
+          <button id="viewGridBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold font-cyber bg-[#1E293B] text-white border border-slate-600 shadow-xs">
             타임라인 뷰
           </button>
-          <button id="viewTableBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800">
+          <button id="viewTableBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold font-cyber text-slate-400 hover:text-white">
             테이블 뷰
           </button>
         </div>
 
         <!-- 새 일정 추가 버튼 -->
-        <button id="addNewTaskBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors">
-          <svg class="w-3.5 h-3.5 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+        <button id="addNewTaskBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-200 bg-[#0E131F] hover:bg-[#161F33] border border-slate-700 hover:border-slate-500 shadow-xs transition-colors">
+          <svg class="w-3.5 h-3.5 text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
           <span>새 일정 추가</span>
         </button>
 
         <!-- 핵심: 개인별 시간표 확정 및 timetable_fixed 즉시 동기화 버튼 -->
-        <button id="toggleCompleteBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-md shadow-[#EA0029]/25 hover:shadow-lg hover:shadow-[#EA0029]/35 transition-all transform hover:-translate-y-0.5">
+        <button id="toggleCompleteBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-sk-cyber-gradient hover:opacity-95 glow-sk-btn transition-all transform hover:-translate-y-0.5">
           <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
           <span>일정 확정 및 timetable_fixed 저장</span>
         </button>
@@ -211,21 +211,21 @@
       <!-- js/timetable-grid.js 로 동적 렌더링 -->
     </div>
 
-    <!-- 테이블 뷰 (스프레드시트 행 스타일) -->
-    <div id="tableViewContainer" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+    <!-- 테이블 뷰 (스프레드시트 행 스타일 다크) -->
+    <div id="tableViewContainer" class="hidden bg-[#0E131F] rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-slate-50/90 border-b border-slate-200 text-xs font-bold text-slate-700">
-              <th class="py-3.5 px-4 font-mono">start_time</th>
-              <th class="py-3.5 px-4 font-mono">end_time</th>
+            <tr class="bg-[#07090E] border-b border-slate-800 text-xs font-bold font-cyber text-slate-300">
+              <th class="py-3.5 px-4 font-mono-cyber">start_time</th>
+              <th class="py-3.5 px-4 font-mono-cyber">end_time</th>
               <th class="py-3.5 px-4">task (업무명)</th>
               <th class="py-3.5 px-4">summary (상세 설명)</th>
               <th class="py-3.5 px-4">etc (특이사항)</th>
               <th class="py-3.5 px-4 text-right">작업</th>
             </tr>
           </thead>
-          <tbody id="tableTbody" class="divide-y divide-slate-100 text-xs">
+          <tbody id="tableTbody" class="divide-y divide-slate-800/60 text-xs">
             <!-- JS 동적 렌더링 -->
           </tbody>
         </table>
@@ -235,13 +235,13 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- 6. 일정 생성 / 편집 모달 (Task Modal)                                     -->
+  <!-- 6. 일정 생성 / 편집 모달 (Task Modal - Dark Cyberpunk)                    -->
   <!-- ========================================================================= -->
-  <div id="taskModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden animate-fade-in">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-        <h3 id="taskModalTitle" class="text-base font-bold text-slate-900">일정 상세 수정</h3>
-        <button id="closeTaskModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+  <div id="taskModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 hidden">
+    <div class="bg-[#0E131F] rounded-2xl shadow-2xl border border-slate-700 max-w-lg w-full overflow-hidden animate-fade-in text-slate-100">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <h3 id="taskModalTitle" class="text-base font-bold font-cyber text-white">일정 상세 수정</h3>
+        <button id="closeTaskModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
@@ -252,61 +252,61 @@
         <!-- 시작 시간 / 종료 시간 (09:00 포맷) -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">start_time (시작 시간)</label>
+            <label class="block text-xs font-bold text-slate-300 mb-1">start_time (시작 시간)</label>
             <input type="time" id="startTimeInput" step="900" required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#EA0029]">
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 font-mono-cyber text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">end_time (종료 시간)</label>
+            <label class="block text-xs font-bold text-slate-300 mb-1">end_time (종료 시간)</label>
             <input type="time" id="endTimeInput" step="900" required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#EA0029]">
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 font-mono-cyber text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]">
           </div>
         </div>
 
         <!-- Task (업무명) -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">task (업무 명칭)</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1">task (업무 명칭)</label>
           <input type="text" id="taskNameInput" placeholder="예: HBM4 패키징 공정 기술 회의" required
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA0029]">
+            class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]">
         </div>
 
         <!-- 카테고리 선택 -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">분류 / 카테고리</label>
-          <select id="categorySelect" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA0029] bg-white">
-            <option value="meeting">회의 / 미팅 (파란색)</option>
-            <option value="dev">개발 / 코딩 (남색)</option>
-            <option value="design">디자인 / 기획 (주황색)</option>
-            <option value="review">검토 / 피드백 (SK 레드)</option>
-            <option value="break">식사 / 휴식 (초록색)</option>
-            <option value="etc">기타 업무 (회색)</option>
+          <label class="block text-xs font-bold text-slate-300 mb-1">분류 / 카테고리</label>
+          <select id="categorySelect" class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]">
+            <option value="meeting">회의 / 미팅 (사이버 시안)</option>
+            <option value="dev">개발 / 코딩 (네온 퍼플)</option>
+            <option value="design">디자인 / 기획 (SK 옐로우/오렌지)</option>
+            <option value="review">검토 / 피드백 (SK 네온 레드)</option>
+            <option value="break">식사 / 휴식 (에메랄드 그린)</option>
+            <option value="etc">기타 업무 (슬레이트 그레이)</option>
           </select>
         </div>
 
         <!-- Summary (업무 설명) -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">summary (업무 상세 설명)</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1">summary (업무 상세 설명)</label>
           <textarea id="summaryInput" rows="3" placeholder="해당 시간대에 진행한 주요 업무 내용을 기록하세요."
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA0029]"></textarea>
+            class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]"></textarea>
         </div>
 
         <!-- Etc (특이사항) -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">etc (특이사항 / 장소 / 메모)</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1">etc (특이사항 / 장소 / 메모)</label>
           <input type="text" id="etcInput" placeholder="예: SUPEX Center 대회의실 / 비대면 병행"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA0029]">
+            class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]">
         </div>
 
         <!-- 모달 하단 버튼 -->
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-          <button type="button" id="deleteTaskBtn" class="text-xs font-bold text-rose-600 hover:text-rose-800 px-3 py-2 rounded-lg hover:bg-rose-50 transition-colors hidden">
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+          <button type="button" id="deleteTaskBtn" class="text-xs font-bold text-rose-400 hover:text-rose-300 px-3 py-2 rounded-lg hover:bg-rose-950/50 transition-colors hidden">
             일정 삭제
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" onclick="document.getElementById('taskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
+            <button type="button" onclick="document.getElementById('taskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
               취소
             </button>
-            <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-sm">
+            <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-sk-cyber-gradient hover:opacity-95 glow-sk-btn transition-all">
               저장하기
             </button>
           </div>
@@ -318,51 +318,51 @@
   <!-- ========================================================================= -->
   <!-- 7. Google Apps Script 연동 설정 모달                                      -->
   <!-- ========================================================================= -->
-  <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden animate-fade-in">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+  <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 hidden">
+    <div class="bg-[#0E131F] rounded-2xl shadow-2xl border border-slate-700 max-w-lg w-full overflow-hidden animate-fade-in text-slate-100">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <h3 class="text-base font-bold font-cyber text-white flex items-center gap-2">
           <span>⚙️ Google 스프레드시트 연동 설정</span>
         </h3>
-        <button id="closeSettingsModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <button id="closeSettingsModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
       <div class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Google Apps Script Web App URL</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Google Apps Script Web App URL</label>
           <input type="url" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#EA0029]">
-          <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+            class="w-full px-3.5 py-2.5 rounded-xl bg-[#07090E] border border-slate-700 font-mono-cyber text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#FF003C] focus:border-[#FF003C]">
+          <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
             * 배포된 Apps Script Web App URL을 통해 구글 시트와 실시간 통신합니다.
           </p>
         </div>
 
-        <div class="bg-rose-50/50 p-3.5 rounded-xl border border-rose-100 text-xs text-slate-800 space-y-1 leading-relaxed">
-          <div class="font-bold flex items-center gap-1.5 text-[#EA0029]">
-            <svg class="w-4 h-4 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="bg-[#14060B] p-3.5 rounded-xl border border-rose-900/60 text-xs text-slate-300 space-y-1 leading-relaxed">
+          <div class="font-bold flex items-center gap-1.5 text-[#FF003C]">
+            <svg class="w-4 h-4 text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span>연동 스프레드시트 정보</span>
           </div>
-          <div>• <strong>원본 timetable</strong>: <code>1rRunNn1fnbEjfLgh7FFwphGVwmdvCQY-Fd1wvmlnzdc</code></div>
-          <div>• <strong>저장 timetable_fixed</strong>: <code>1ISBLWMZNBjVe7yJU7W8QWNGyhlZIV6qBsKDplee2Xpc</code></div>
+          <div>• <strong>원본 timetable</strong>: <code class="text-amber-300 font-mono-cyber">1rRunNn1fnbEjfLgh7FFwphGVwmdvCQY-Fd1wvmlnzdc</code></div>
+          <div>• <strong>저장 timetable_fixed</strong>: <code class="text-amber-300 font-mono-cyber">1ISBLWMZNBjVe7yJU7W8QWNGyhlZIV6qBsKDplee2Xpc</code></div>
         </div>
 
         <!-- 원클릭 샘플 데이터 생성 버튼 -->
         <div class="pt-2 flex flex-col gap-2">
-          <button type="button" id="initSampleBtn" class="w-full py-2.5 px-3 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-[#EA0029] text-xs font-bold transition-colors flex items-center justify-center gap-1.5">
+          <button type="button" id="initSampleBtn" class="w-full py-2.5 px-3 rounded-xl border border-rose-500/50 bg-[#2A0812] hover:bg-[#3D0A1B] text-[#FF4D6D] text-xs font-bold transition-colors flex items-center justify-center gap-1.5">
             <span>✨ 원본 timetable 구글 시트에 샘플 데이터 자동 생성하기</span>
           </button>
-          <button type="button" id="resetLocalMockBtn" class="w-full py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold transition-colors">
+          <button type="button" id="resetLocalMockBtn" class="w-full py-2 px-3 rounded-xl border border-slate-700 bg-[#07090E] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors">
             로컬 캐시 초기화
           </button>
         </div>
 
-        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
-          <button type="button" onclick="document.getElementById('settingsModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
+        <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+          <button type="button" onclick="document.getElementById('settingsModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800">
             닫기
           </button>
-          <button type="button" id="saveSettingsBtn" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-sm">
+          <button type="button" id="saveSettingsBtn" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-sk-cyber-gradient hover:opacity-95 glow-sk-btn transition-all">
             설정 저장
           </button>
         </div>
@@ -373,25 +373,25 @@
   <!-- ========================================================================= -->
   <!-- 8. timetable_fixed 최종 전체 저장 확인 모달                               -->
   <!-- ========================================================================= -->
-  <div id="saveConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden animate-fade-in">
+  <div id="saveConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 hidden">
+    <div class="bg-[#0E131F] rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full overflow-hidden animate-fade-in text-slate-100">
       <div class="p-6">
-        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-[#EA0029] flex items-center justify-center mb-4">
+        <div class="w-12 h-12 rounded-2xl bg-[#2A0812] text-[#FF003C] flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(255,0,60,0.3)]">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
         </div>
-        <h3 class="text-base font-bold text-slate-900 mb-1">모든 시트를 timetable_fixed에 저장하시겠습니까?</h3>
-        <p class="text-xs text-slate-500 mb-4">모든 개인의 시간표가 타겟 구글 스프레드시트(`timetable_fixed`)에 동기화됩니다.</p>
+        <h3 class="text-base font-bold font-cyber text-white mb-1">모든 시트를 timetable_fixed에 저장하시겠습니까?</h3>
+        <p class="text-xs text-slate-400 mb-4">모든 개인의 시간표가 타겟 구글 스프레드시트(`timetable_fixed`)에 동기화됩니다.</p>
 
         <!-- 저장 대상 시트 요약 리스트 -->
-        <div id="saveConfirmSummary" class="bg-slate-50 rounded-xl p-3 max-h-48 overflow-y-auto mb-4 border border-slate-100">
+        <div id="saveConfirmSummary" class="bg-[#07090E] rounded-xl p-3 max-h-48 overflow-y-auto mb-4 border border-slate-800">
           <!-- JS로 동적 생성 -->
         </div>
 
         <div class="flex items-center gap-2 justify-end">
-          <button type="button" id="cancelSaveBtn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
+          <button type="button" id="cancelSaveBtn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800">
             취소
           </button>
-          <button type="button" id="confirmSaveBtn" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-sm">
+          <button type="button" id="confirmSaveBtn" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-sk-cyber-gradient hover:opacity-95 glow-sk-btn transition-all">
             지금 전체 저장하기
           </button>
         </div>

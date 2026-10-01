@@ -174,42 +174,42 @@ const INITIAL_MOCK_DATA = {
   ]
 };
 
-// SK hynix 브랜드 컬러와 조화를 이루는 고대비 카테고리 컬러 팔레트
+// Cyberpunk SK hynix 네온 컬러 팔레트 (다크 배경 최적화)
 const CATEGORY_COLORS = {
   meeting: {
-    bg: "bg-sky-50/90 border-sky-300 text-sky-950",
-    badge: "bg-sky-100 text-sky-800 border-sky-300",
-    bar: "bg-blue-600",
+    bg: "bg-[#0A192F]/90 border-cyan-500/80 text-cyan-100 shadow-[0_0_15px_rgba(6,182,212,0.2)]",
+    badge: "bg-cyan-950/80 text-cyan-300 border-cyan-500/50 shadow-xs",
+    bar: "bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]",
     label: "회의 / 미팅"
   },
   dev: {
-    bg: "bg-indigo-50/90 border-indigo-300 text-indigo-950",
-    badge: "bg-indigo-100 text-indigo-800 border-indigo-300",
-    bar: "bg-indigo-600",
+    bg: "bg-[#180E29]/90 border-purple-500/80 text-purple-100 shadow-[0_0_15px_rgba(168,85,247,0.2)]",
+    badge: "bg-purple-950/80 text-purple-300 border-purple-500/50 shadow-xs",
+    bar: "bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]",
     label: "개발 / 코딩"
   },
   design: {
-    bg: "bg-orange-50/90 border-orange-300 text-orange-950",
-    badge: "bg-orange-100 text-orange-900 border-orange-300",
-    bar: "bg-[#FF6A00]",
+    bg: "bg-[#251A08]/90 border-amber-400/90 text-amber-100 shadow-[0_0_15px_rgba(251,191,36,0.25)]",
+    badge: "bg-amber-950/80 text-amber-300 border-amber-400/50 shadow-xs",
+    bar: "bg-[#FFE600] shadow-[0_0_8px_rgba(255,230,0,0.8)]",
     label: "디자인 / 기획"
   },
   review: {
-    bg: "bg-rose-50/90 border-rose-300 text-rose-950",
-    badge: "bg-rose-100 text-rose-900 border-rose-300",
-    bar: "bg-[#EA0029]",
+    bg: "bg-[#2A0812]/90 border-rose-500/90 text-rose-100 shadow-[0_0_15px_rgba(255,0,60,0.25)]",
+    badge: "bg-rose-950/80 text-rose-300 border-rose-500/50 shadow-xs",
+    bar: "bg-[#FF003C] shadow-[0_0_8px_rgba(255,0,60,0.8)]",
     label: "검토 / 피드백"
   },
   break: {
-    bg: "bg-emerald-50/90 border-emerald-300 text-emerald-950",
-    badge: "bg-emerald-100 text-emerald-900 border-emerald-300",
-    bar: "bg-emerald-600",
+    bg: "bg-[#07241A]/90 border-emerald-500/80 text-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.2)]",
+    badge: "bg-emerald-950/80 text-emerald-300 border-emerald-500/50 shadow-xs",
+    bar: "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]",
     label: "식사 / 휴식"
   },
   etc: {
-    bg: "bg-slate-50/90 border-slate-300 text-slate-950",
-    badge: "bg-slate-100 text-slate-800 border-slate-300",
-    bar: "bg-slate-600",
+    bg: "bg-[#111827]/90 border-slate-600/80 text-slate-200 shadow-[0_0_12px_rgba(148,163,184,0.15)]",
+    badge: "bg-slate-900/80 text-slate-300 border-slate-600/50 shadow-xs",
+    bar: "bg-slate-400 shadow-[0_0_6px_rgba(148,163,184,0.6)]",
     label: "기타 업무"
   }
 };

@@ -1,5 +1,5 @@
 /**
- * SKHY Timetable Studio - Main Application Controller
+ * SKHY Timetable Studio - Main Application Controller (Cyberpunk Dark Edition)
  */
 
 (function () {
@@ -16,13 +16,10 @@
 
   // DOM 요소 캐시
   const elements = {
-    // 날짜
+    // 날짜 & 실시간 시계
     dateTitle: document.getElementById("dateTitle"),
     dayOfWeekBadge: document.getElementById("dayOfWeekBadge"),
-    prevDayBtn: document.getElementById("prevDayBtn"),
-    nextDayBtn: document.getElementById("nextDayBtn"),
-    todayBtn: document.getElementById("todayBtn"),
-    datePickerInput: document.getElementById("datePickerInput"),
+    liveClockDisplay: document.getElementById("liveClockDisplay"),
 
     // 탭 & 통계
     sheetTabs: document.getElementById("sheetTabs"),
@@ -85,6 +82,7 @@
    */
   async function init() {
     setupEventListeners();
+    startLiveClock();
     updateConnectionBadge();
 
     // 타임테이블 엔진 초기화
@@ -99,20 +97,30 @@
   }
 
   /**
+   * 실시간 디지털 시계 시작 (1초 주기 업데이트)
+   */
+  function startLiveClock() {
+    function updateClock() {
+      if (!elements.liveClockDisplay) return;
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      elements.liveClockDisplay.textContent = `${h}:${m}:${s} KST`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+  }
+
+  /**
    * 이벤트 리스너 등록
    */
   function setupEventListeners() {
-    // 날짜 이동
-    elements.prevDayBtn.addEventListener("click", () => changeDate(-1));
-    elements.nextDayBtn.addEventListener("click", () => changeDate(1));
-    elements.todayBtn.addEventListener("click", () => setDate(new Date().toISOString().split("T")[0]));
-    elements.datePickerInput.addEventListener("change", (e) => setDate(e.target.value));
-
     // 뷰 모드 전환
     elements.viewGridBtn.addEventListener("click", () => switchViewMode("grid"));
     elements.viewTableBtn.addEventListener("click", () => switchViewMode("table"));
 
-    // 개인별 완료 상태 토글 버튼
+    // 개인별 완료 상태 토글 버튼 (확정 시 timetable_fixed 즉시 동기화)
     elements.toggleCompleteBtn.addEventListener("click", toggleActiveSheetStatus);
 
     // 일정 추가 버튼
@@ -152,37 +160,37 @@
   }
 
   /**
-   * 스켈레톤 로딩 UI 렌더링 (첫 방문 또는 데이터 없을 때 고급 쉬머 효과)
+   * 스켈레톤 로딩 UI 렌더링 (사이버 테마 쉬머 효과)
    */
   function renderSkeletonLoading() {
     // 1. 탭 스켈레톤
     elements.sheetTabs.innerHTML = `
-      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200/60"></div>
-      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200/60"></div>
-      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-200/60"></div>
+      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-800"></div>
+      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-800"></div>
+      <div class="h-10 w-28 rounded-xl skeleton-shimmer border border-slate-800"></div>
     `;
 
     // 2. 메인 시간표 스켈레톤
     elements.timetableContainer.innerHTML = `
-      <div class="w-full bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+      <div class="w-full bg-[#0E131F] rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-2xl space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
           <div class="h-6 w-48 rounded-lg skeleton-shimmer"></div>
           <div class="h-6 w-32 rounded-lg skeleton-shimmer"></div>
         </div>
         <div class="space-y-4 py-2">
-          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-rose-100/70 flex items-center px-6">
-            <div class="h-4 w-1/3 bg-white/70 rounded-md"></div>
+          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-rose-950/40 flex items-center px-6">
+            <div class="h-4 w-1/3 bg-slate-800/80 rounded-md"></div>
           </div>
-          <div class="h-32 w-full rounded-2xl skeleton-shimmer border border-rose-100/70 flex items-center px-6">
-            <div class="h-4 w-1/2 bg-white/70 rounded-md"></div>
+          <div class="h-32 w-full rounded-2xl skeleton-shimmer border border-rose-950/40 flex items-center px-6">
+            <div class="h-4 w-1/2 bg-slate-800/80 rounded-md"></div>
           </div>
-          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-rose-100/70 flex items-center px-6">
-            <div class="h-4 w-2/5 bg-white/70 rounded-md"></div>
+          <div class="h-24 w-full rounded-2xl skeleton-shimmer border border-rose-950/40 flex items-center px-6">
+            <div class="h-4 w-2/5 bg-slate-800/80 rounded-md"></div>
           </div>
         </div>
-        <div class="text-center py-2 text-xs font-semibold text-slate-500 flex items-center justify-center gap-2">
-          <svg class="w-4 h-4 text-[#EA0029] animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          <span class="text-slate-600 font-medium">Google 스프레드시트 실시간 데이터를 안전하게 동기화하고 있습니다...</span>
+        <div class="text-center py-2 text-xs font-semibold text-slate-400 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-[#FF003C] animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span class="text-slate-300 font-mono-cyber">Google 스프레드시트 실시간 데이터를 안전하게 동기화하고 있습니다...</span>
         </div>
       </div>
     `;
@@ -198,13 +206,13 @@
 
     if (hasValidCache && !isManualRefresh) {
       state.sheets = local.sheets;
-      state.currentDate = local.currentDate || new Date().toISOString().split("T")[0];
+      state.currentDate = local.currentDate || "2026-10-01";
       state.activeSheetIndex = 0;
       renderAll(); // 캐시 데이터로 즉각 렌더링 (체감 대기시간 0초!)
 
       // 상단 뱃지에 백그라운드 동기화 중 표시
-      elements.connectionBadge.className = "ml-1 sm:ml-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs";
-      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#EA0029] animate-ping"></span> 시트 동기화 중...`;
+      elements.connectionBadge.className = "ml-1 sm:ml-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono-cyber font-bold bg-[#2A0812] text-[#FF4D6D] border border-rose-500/40 shadow-[0_0_10px_rgba(255,0,60,0.25)]";
+      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#FF003C] animate-ping"></span> 시트 동기화 중...`;
     } else {
       renderSkeletonLoading();
       showLoading(true);
@@ -241,7 +249,7 @@
    * 원본 데이터 다시 새로고침
    */
   async function refreshData() {
-    if (confirm("원본 스프레드시트에서 데이터를 다시 불러오시겠습니까? 현재 저장되지 않은 로컬 수정사항은 덮어씌워질 수 있습니다.")) {
+    if (confirm("원본 timetable 구글 스프레드시트에서 데이터를 다시 불러오시겠습니까?")) {
       await loadInitialData(true);
     }
   }
@@ -270,31 +278,23 @@
   }
 
   /**
-   * 상단 대형 날짜 헤더 렌더링
+   * 상단 대형 날짜 헤더 렌더링 (Cyberpunk HUD 포맷)
    */
   function renderDateHeader() {
     const curDate = new Date(state.currentDate);
     const days = ["일", "월", "화", "수", "목", "금", "토"];
+    const daysEn = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
     const y = curDate.getFullYear();
     const m = String(curDate.getMonth() + 1).padStart(2, "0");
     const d = String(curDate.getDate()).padStart(2, "0");
-    const dayName = days[curDate.getDay()];
+    const dayIdx = curDate.getDay();
 
-    elements.dateTitle.textContent = `${y}년 ${m}월 ${d}일`;
-    elements.dayOfWeekBadge.textContent = `${dayName}요일`;
-    elements.datePickerInput.value = state.currentDate;
-
-    // 오늘 날짜인지 판별
-    const todayStr = new Date().toISOString().split("T")[0];
-    if (state.currentDate === todayStr) {
-      elements.todayBtn.classList.add("bg-blue-100", "text-blue-700");
-    } else {
-      elements.todayBtn.classList.remove("bg-blue-100", "text-blue-700");
-    }
+    elements.dateTitle.textContent = `${y}. ${m}. ${d}`;
+    elements.dayOfWeekBadge.textContent = `${daysEn[dayIdx]} (${days[dayIdx]})`;
   }
 
   /**
-   * 상단 시트/개인 탭 바 렌더링
+   * 상단 시트/개인 탭 바 렌더링 (사이버 다크 테마)
    */
   function renderSheetTabs() {
     elements.sheetTabs.innerHTML = "";
@@ -304,26 +304,26 @@
       const isCompleted = sheet.status === "completed";
 
       const tab = document.createElement("button");
-      tab.className = `group flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
+      tab.className = `group flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-cyber transition-all duration-150 ${
         isActive
-          ? "bg-white text-[#EA0029] shadow-xs border border-slate-200/90 ring-2 ring-[#EA0029]/20 font-bold"
-          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+          ? "bg-[#161F33] text-[#FFE600] border border-[#FF003C]/80 shadow-[0_0_15px_rgba(255,0,60,0.3)] font-bold ring-1 ring-[#FFE600]/40"
+          : "text-slate-400 hover:text-white hover:bg-[#0E131F]/90 border border-slate-800"
       }`;
 
       // 상태 아이콘 & 뱃지
       const statusIcon = isCompleted
-        ? `<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>`
-        : `<span class="h-2 w-2 rounded-full bg-[#EA0029]"></span>`;
+        ? `<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#34D399]"></span></span>`
+        : `<span class="h-2 w-2 rounded-full bg-[#FF003C] shadow-[0_0_6px_#FF003C]"></span>`;
 
       const taskCount = (sheet.data || []).length;
 
       tab.innerHTML = `
         <div class="flex items-center gap-1.5">
           ${statusIcon}
-          <span class="truncate max-w-[120px]">👤 ${escapeHtml(sheet.sheetName)}</span>
+          <span class="truncate max-w-[130px]">👤 ${escapeHtml(sheet.sheetName)}</span>
         </div>
-        <span class="px-1.5 py-0.2 rounded-md text-[11px] font-mono ${
-          isActive ? "bg-rose-50 text-[#EA0029] font-bold" : "bg-slate-100 text-slate-500"
+        <span class="px-1.5 py-0.2 rounded-md text-[11px] font-mono-cyber ${
+          isActive ? "bg-[#2A0812] text-[#FF4D6D] border border-rose-500/40 font-bold" : "bg-[#07090E] text-slate-400 border border-slate-800"
         }">${taskCount}</span>
       `;
 
@@ -337,7 +337,7 @@
   }
 
   /**
-   * 현재 활성 개인 대시보드 헤더 렌더링
+   * 현재 활성 개인 대시보드 헤더 렌더링 (사이버펑크 네온 다크)
    */
   function renderActiveSheetHeader() {
     const sheet = getActiveSheet();
@@ -347,28 +347,28 @@
     const isCompleted = sheet.status === "completed";
 
     if (isCompleted) {
-      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs";
+      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-cyber bg-[#07241A] text-emerald-300 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.3)]";
       elements.personStatusBadge.innerHTML = `
-        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
         <span>확정 완료 (timetable_fixed 동기화됨)</span>
       `;
 
-      elements.toggleCompleteBtn.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200";
+      elements.toggleCompleteBtn.className = "flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold font-cyber text-slate-300 bg-[#0E131F] hover:bg-[#161F33] hover:text-white transition-colors border border-slate-700";
       elements.toggleCompleteBtn.innerHTML = `
-        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
         <span>다시 수정하기</span>
       `;
     } else {
-      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-[#EA0029] border border-rose-200 shadow-2xs";
+      elements.personStatusBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-cyber bg-[#2A0812] text-[#FF4D6D] border border-rose-500/40 shadow-[0_0_10px_rgba(255,0,60,0.25)]";
       elements.personStatusBadge.innerHTML = `
-        <span class="w-2 h-2 rounded-full bg-[#EA0029] animate-pulse"></span>
+        <span class="w-2 h-2 rounded-full bg-[#FF003C] animate-pulse shadow-[0_0_6px_#FF003C]"></span>
         <span>수정 진행 중 (Draft)</span>
       `;
 
-      elements.toggleCompleteBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#EA0029] to-[#FF6A00] hover:from-[#D00024] hover:to-[#E65F00] shadow-md shadow-[#EA0029]/25 hover:shadow-lg hover:shadow-[#EA0029]/35 transition-all transform hover:-translate-y-0.5";
+      elements.toggleCompleteBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-cyber text-white bg-sk-cyber-gradient hover:opacity-95 glow-sk-btn transition-all transform hover:-translate-y-0.5";
       elements.toggleCompleteBtn.innerHTML = `
         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-        <span>${escapeHtml(sheet.sheetName)} 님 일정 확정 (timetable_fixed 동기화)</span>
+        <span>${escapeHtml(sheet.sheetName)} 님 일정 확정 (timetable_fixed 저장)</span>
       `;
     }
   }
@@ -402,35 +402,35 @@
   }
 
   /**
-   * 테이블(스프레드시트 형태) 뷰 렌더링
+   * 테이블(스프레드시트 형태) 뷰 렌더링 (사이버 다크 테마)
    */
   function renderTableView(sheet) {
     elements.tableTbody.innerHTML = "";
     const tasks = sheet.data || [];
 
     if (tasks.length === 0) {
-      elements.tableTbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">등록된 일정이 없습니다. 우측 상단 [+ 새 일정 추가] 버튼을 눌러보세요.</td></tr>`;
+      elements.tableTbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-500 font-mono-cyber">등록된 일정이 없습니다. 우측 상단 [+ 새 일정 추가] 버튼을 눌러보세요.</td></tr>`;
       return;
     }
 
     tasks.forEach((task, idx) => {
       const tr = document.createElement("tr");
-      tr.className = "hover:bg-slate-50/80 transition-colors border-b border-slate-100";
+      tr.className = "hover:bg-[#161F33]/60 transition-colors border-b border-slate-800/80 text-slate-200";
 
       const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
 
       tr.innerHTML = `
-        <td class="py-3 px-4 font-mono font-bold text-slate-700 text-xs">${task.start_time}</td>
-        <td class="py-3 px-4 font-mono font-bold text-slate-700 text-xs">${task.end_time}</td>
+        <td class="py-3 px-4 font-mono-cyber font-bold text-amber-400 text-xs">${task.start_time}</td>
+        <td class="py-3 px-4 font-mono-cyber font-bold text-amber-400 text-xs">${task.end_time}</td>
         <td class="py-3 px-4">
-          <div class="font-bold text-slate-900 text-sm break-keep">${escapeHtml(task.task)}</div>
-          <span class="inline-block mt-0.5 text-[10px] px-1.5 py-0.5 rounded border ${catConfig.badge}">${catConfig.label}</span>
+          <div class="font-bold text-white text-sm break-keep">${escapeHtml(task.task)}</div>
+          <span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full border ${catConfig.badge}">${catConfig.label}</span>
         </td>
-        <td class="py-3 px-4 text-xs text-slate-600 max-w-sm break-keep leading-relaxed">${escapeHtml(task.summary || "-")}</td>
-        <td class="py-3 px-4 text-xs text-slate-500 break-keep">${escapeHtml(task.etc || "-")}</td>
+        <td class="py-3 px-4 text-xs text-slate-300 max-w-sm break-keep leading-relaxed">${escapeHtml(task.summary || "-")}</td>
+        <td class="py-3 px-4 text-xs text-slate-400 break-keep">${escapeHtml(task.etc || "-")}</td>
         <td class="py-3 px-4 text-right">
-          <button class="edit-row-btn px-2.5 py-1 text-xs font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg mr-1 transition-colors">수정</button>
-          <button class="delete-row-btn px-2.5 py-1 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors">삭제</button>
+          <button class="edit-row-btn px-2.5 py-1 text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:bg-cyan-950/50 rounded-lg mr-1 transition-colors">수정</button>
+          <button class="delete-row-btn px-2.5 py-1 text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-950/50 rounded-lg transition-colors">삭제</button>
         </td>
       `;
 
@@ -660,14 +660,14 @@
       const isComp = s.status === "completed";
       const count = (s.data || []).length;
       return `
-        <div class="flex items-center justify-between py-2 border-b border-slate-100 text-sm">
+        <div class="flex items-center justify-between py-2 border-b border-slate-800 text-sm">
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full ${isComp ? 'bg-emerald-500' : 'bg-amber-400'}"></span>
-            <span class="font-bold text-slate-800">${escapeHtml(s.sheetName)}</span>
+            <span class="w-2.5 h-2.5 rounded-full ${isComp ? 'bg-emerald-400 shadow-[0_0_6px_#34D399]' : 'bg-[#FFE600] shadow-[0_0_6px_#FFE600]'}"></span>
+            <span class="font-bold text-white font-cyber">${escapeHtml(s.sheetName)}</span>
           </div>
           <div class="flex items-center gap-3 text-xs">
-            <span class="text-slate-500">${count}개 일정</span>
-            <span class="px-2 py-0.5 rounded font-semibold ${isComp ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+            <span class="text-slate-400 font-mono-cyber">${count}개 일정</span>
+            <span class="px-2 py-0.5 rounded font-semibold font-cyber ${isComp ? 'bg-[#07241A] text-emerald-300 border border-emerald-500/40' : 'bg-[#251A08] text-amber-300 border border-amber-500/40'}">
               ${isComp ? '확정 완료' : '수정 중'}
             </span>
           </div>
@@ -749,39 +749,25 @@
     }
   }
 
-  /**
-   * 날짜 변경 유틸리티
-   */
-  function changeDate(daysOffset) {
-    const d = new Date(state.currentDate);
-    d.setDate(d.getDate() + daysOffset);
-    setDate(d.toISOString().split("T")[0]);
-  }
-
-  function setDate(dateStr) {
-    state.currentDate = dateStr;
-    renderAll();
-  }
-
   function switchViewMode(mode) {
     state.viewMode = mode;
     if (mode === "grid") {
-      elements.viewGridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-sm border border-slate-200";
-      elements.viewTableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800";
+      elements.viewGridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-cyber bg-[#1E293B] text-white border border-slate-600 shadow-xs";
+      elements.viewTableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-cyber text-slate-400 hover:text-white";
     } else {
-      elements.viewGridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800";
-      elements.viewTableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-sm border border-slate-200";
+      elements.viewGridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-cyber text-slate-400 hover:text-white";
+      elements.viewTableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-cyber bg-[#1E293B] text-white border border-slate-600 shadow-xs";
     }
     renderAll();
   }
 
   function updateConnectionBadge() {
     if (SheetsApi.isConfigured()) {
-      elements.connectionBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300";
-      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Google 시트 연결됨`;
+      elements.connectionBadge.className = "ml-1 sm:ml-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono-cyber font-bold bg-[#07241A] text-emerald-300 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.25)]";
+      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Google 시트 연결됨`;
     } else {
-      elements.connectionBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-300";
-      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span> Mock / 오프라인 모드`;
+      elements.connectionBadge.className = "ml-1 sm:ml-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono-cyber font-bold bg-[#111827] text-slate-400 border border-slate-700";
+      elements.connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Mock / 오프라인 모드`;
     }
   }
 
@@ -792,7 +778,6 @@
 
   function showLoading(show) {
     state.isLoading = show;
-    // 간단한 로딩 인디케이터 처리
     if (elements.refreshDataBtn) {
       if (show) {
         elements.refreshDataBtn.classList.add("animate-spin");
@@ -803,17 +788,17 @@
   }
 
   /**
-   * 토스트 알림 표시
+   * 토스트 알림 표시 (Cyberpunk Dark Neon 스타일)
    */
   function showToast(message, type = "info", duration = 3000) {
     const toast = document.createElement("div");
     const bgMap = {
-      success: "bg-emerald-800 text-white border-emerald-700",
-      error: "bg-rose-800 text-white border-rose-700",
-      info: "bg-slate-900 text-white border-slate-800"
+      success: "bg-[#07241A]/95 text-emerald-200 border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.3)]",
+      error: "bg-[#2A0812]/95 text-rose-200 border-rose-500/60 shadow-[0_0_20px_rgba(255,0,60,0.3)]",
+      info: "bg-[#0E131F]/95 text-slate-100 border-slate-700/80 shadow-[0_0_20px_rgba(0,0,0,0.8)]"
     };
 
-    toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-sm font-medium border transition-all duration-300 transform translate-y-2 opacity-0 ${bgMap[type] || bgMap.info}`;
+    toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium border backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 font-cyber ${bgMap[type] || bgMap.info}`;
     toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
 
     elements.toastContainer.appendChild(toast);
