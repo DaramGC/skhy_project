@@ -526,16 +526,16 @@
     elements.toggleCompleteBtn.disabled = true;
     elements.toggleCompleteBtn.innerHTML = `
       <svg class="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-      <span>timetable_fixed에 저장 중...</span>
+      <span>저장 중...</span>
     `;
 
     // 3. timetable_fixed 스프레드시트에 즉시 전송 & 동기화
     try {
       const res = await SheetsApi.saveFixedData(state.sheets);
-      showToast(`✓ ${sheet.sheetName} 님의 일정이 확정되어 timetable_fixed 구글 시트에 반영되었습니다!`, "success", 4500);
+      showToast(`✓ ${sheet.sheetName} 님의 일정이 확정되어 구글 시트에 저장되었습니다!`, "success", 4000);
     } catch (e) {
       console.error(e);
-      showToast(`timetable_fixed 자동 저장 실패: ${e.message}`, "error", 4500);
+      showToast(`저장 실패: ${e.message}`, "error", 4000);
     } finally {
       elements.toggleCompleteBtn.disabled = false;
       renderAll();
