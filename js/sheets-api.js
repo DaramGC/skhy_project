@@ -3,14 +3,15 @@
  */
 
 const SheetsApi = (function () {
+  const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxd5c5sHok_UUWu-_pLsvQ0VBxSjPdIrM0tqXKoZ5vcgIZcLHNNXTFUdQF34abiynSfvA/exec";
   const GAS_URL_KEY = "skhy_gas_web_app_url";
   const LOCAL_CACHE_KEY = "skhy_timetable_cache_v1";
 
   /**
-   * 저장된 Google Apps Script Web App URL 반환
+   * 저장된 Google Apps Script Web App URL 반환 (미설정 시 기본 배포 URL 반환)
    */
   function getGasUrl() {
-    return localStorage.getItem(GAS_URL_KEY) || "";
+    return localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
   }
 
   /**
