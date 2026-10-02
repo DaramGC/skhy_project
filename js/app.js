@@ -427,7 +427,12 @@
       const tr = document.createElement("tr");
       tr.className = "hover:bg-rose-50/20 transition-colors border-b border-slate-100/90";
 
-      const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
+      const catConfig = (typeof CATEGORY_COLORS !== "undefined" && (CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc)) || {
+        bg: "bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-2xs hover:border-slate-300",
+        badge: "bg-slate-200/80 text-slate-700 border-slate-300",
+        bar: "bg-slate-400",
+        label: "기타 업무"
+      };
 
       tr.innerHTML = `
         <td class="py-2.5 px-3">

@@ -294,8 +294,13 @@ const TimetableGrid = (function () {
     card.style.width = `calc(${colWidth}% - 8px)`;
     card.style.zIndex = (10 + (task._col || 0)).toString();
 
-    // 테마 색상 클래스 적용
-    const catConfig = CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc;
+    // 테마 색상 클래스 적용 (안전한 폴백 제공)
+    const catConfig = (typeof CATEGORY_COLORS !== "undefined" && (CATEGORY_COLORS[task.category] || CATEGORY_COLORS.etc)) || {
+      bg: "bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-2xs hover:border-slate-300",
+      badge: "bg-slate-200/80 text-slate-700 border-slate-300",
+      bar: "bg-slate-400",
+      label: "업무"
+    };
 
     // 높이 및 소요시간 단계 판별 (45분 이하 일정은 30분과 동일한 컴팩트 가로 인라인 레이아웃 적용)
     const isShort = durationM <= 45 || heightPx < 75;

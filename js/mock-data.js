@@ -330,3 +330,49 @@ const INITIAL_MOCK_DATA = {
     }
   ]
 };
+
+// SK Careers 스타일 클린 파스텔 컬러 팔레트 (화이트 배경 최적화)
+const CATEGORY_COLORS = {
+  meeting: {
+    bg: "bg-sky-50/90 border-sky-200/90 text-slate-900 shadow-2xs hover:border-sky-300",
+    badge: "bg-sky-100/90 text-sky-800 border-sky-200",
+    bar: "bg-sky-500",
+    label: "회의 / 미팅"
+  },
+  dev: {
+    bg: "bg-indigo-50/90 border-indigo-200/90 text-slate-900 shadow-2xs hover:border-indigo-300",
+    badge: "bg-indigo-100/90 text-indigo-800 border-indigo-200",
+    bar: "bg-indigo-600",
+    label: "개발 / 코딩"
+  },
+  design: {
+    bg: "bg-amber-50/90 border-amber-200/90 text-slate-900 shadow-2xs hover:border-amber-300",
+    badge: "bg-amber-100/90 text-amber-800 border-amber-200",
+    bar: "bg-[#FF6A00]",
+    label: "디자인 / 기획"
+  },
+  review: {
+    bg: "bg-rose-50/90 border-rose-200/90 text-slate-900 shadow-2xs hover:border-rose-300",
+    badge: "bg-rose-100/90 text-[#EA0029] border-rose-200 font-bold",
+    bar: "bg-[#EA0029]",
+    label: "검토 / 피드백"
+  },
+  break: {
+    bg: "bg-emerald-50/90 border-emerald-200/90 text-slate-900 shadow-2xs hover:border-emerald-300",
+    badge: "bg-emerald-100/90 text-emerald-800 border-emerald-200",
+    bar: "bg-emerald-500",
+    label: "식사 / 휴식"
+  },
+  etc: {
+    bg: "bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-2xs hover:border-slate-300",
+    badge: "bg-slate-200/80 text-slate-700 border-slate-300",
+    bar: "bg-slate-400",
+    label: "기타 업무"
+  }
+};
+
+if (typeof window !== "undefined") {
+  window.CATEGORY_COLORS = CATEGORY_COLORS;
+}
+
+
