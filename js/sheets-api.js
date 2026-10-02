@@ -376,7 +376,7 @@ const SheetsApi = (function () {
       return {
         success: true,
         source: "google",
-        message: "구글 스프레드시트(timetable_fixed)의 단일 시트에 모든 팀원의 일정이 성공적으로 동기화되었습니다!",
+        message: "구글 스프레드시트(timetable_fixed)의 Main 시트에 모든 팀원의 일정이 성공적으로 동기화되었습니다!",
         details: resJson.details
       };
     } catch (error) {

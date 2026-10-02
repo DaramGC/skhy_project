@@ -9,9 +9,10 @@
  * 
  * [데이터 포맷 변경점]
  * - 기존: 시트 이름별로 개인의 스케줄 관리
- * - 변경: 단일 시트에 모든 사람의 일정을 기록하며, 'sheet_name' 열에 개인 이름이 들어감
+ * - 변경: timetable 및 timetable_fixed 모두 단일 'Main' 시트에 모든 사람의 일정을 통합 기록
+ * - 'sheet_name' 열에 개인 이름(A_담당, B_팀장, C_파트장 등)이 들어감
  * - 컬럼 구성: [sheet_name, start_time, end_time, task, summary, etc]
- * - 저장 시: timetable_fixed 스프레드시트의 단일 시트에 모든 팀원의 일정을 동일 포맷으로 저장
+ * - 저장 시: timetable_fixed의 'Main' 시트에 timetable과 동일한 규격으로 일괄 저장
  * 
  * [배포 방법]
  * 1. 스프레드시트 메뉴 > 확장 프로그램 > Apps Script 클릭
@@ -191,20 +192,19 @@ function readAllSheetsFromSource(forceRefresh) {
 
 /**
  * 타겟 timetable_fixed 스프레드시트에 저장
- * - 모든 사람의 일정을 단일 시트 'timetable_fixed'에 저장
+ * - timetable 컨벤션과 동일하게 'Main' 단일 시트에 모든 사람의 일정을 통합 저장
  * - 헤더: [sheet_name, start_time, end_time, task, summary, etc]
  */
 function saveSheetsToTarget(sheets) {
   const ss = SpreadsheetApp.openById(TARGET_SPREADSHEET_ID);
-  const TARGET_SHEET_NAME = "timetable_fixed";
+  const TARGET_SHEET_NAME = "Main"; // timetable 원본과 동일한 'Main' 단일 시트
 
-  // 단일 시트 준비
-  let targetSheet = ss.getSheetByName(TARGET_SHEET_NAME) || ss.getSheets()[0];
+  // 'Main' 단일 시트 준비
+  let targetSheet = ss.getSheetByName(TARGET_SHEET_NAME);
   if (!targetSheet) {
-    targetSheet = ss.insertSheet(TARGET_SHEET_NAME);
-  } else {
-    targetSheet.clear(); // 기존 내용 초기화 후 덮어쓰기
+    targetSheet = ss.getSheets()[0] || ss.insertSheet(TARGET_SHEET_NAME);
   }
+  targetSheet.clear(); // 기존 내용 초기화 후 덮어쓰기
   try {
     targetSheet.setName(TARGET_SHEET_NAME);
   } catch(e) {}
@@ -278,12 +278,15 @@ function saveSheetsToTarget(sheets) {
  */
 function populateSampleData() {
   const ss = SpreadsheetApp.openById(SOURCE_SPREADSHEET_ID);
-  let sheet = ss.getSheetByName("timetable") || ss.getSheets()[0];
+  let sheet = ss.getSheetByName("Main") || ss.getSheets()[0];
   if (!sheet) {
-    sheet = ss.insertSheet("timetable");
+    sheet = ss.insertSheet("Main");
   } else {
     sheet.clear();
   }
+  try {
+    sheet.setName("Main");
+  } catch(e) {}
 
   // 헤더 추가
   sheet.getRange(1, 1, 1, COLUMN_HEADERS.length).setValues([COLUMN_HEADERS]);
