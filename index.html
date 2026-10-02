@@ -144,13 +144,13 @@
         </div>
 
         <!-- 팀원 탭 목록 컨테이너 (모바일: 가로 스크롤 / PC: 세로 나열) -->
-        <div class="flex items-center gap-2 w-full">
+        <div class="flex flex-row lg:flex-col items-center lg:items-stretch gap-2 w-full">
           <div id="sheetTabs" class="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-1.5 lg:pb-0 scrollbar-none touch-pan-x w-full flex-1">
             <!-- JS로 반응형 목록 동적 렌더링 -->
           </div>
 
-          <!-- 새 팀원/시트 추가 버튼 -->
-          <button id="addSheetBtn" type="button" class="flex-shrink-0 lg:w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-[#EA0029] bg-slate-50 hover:bg-rose-50 border border-dashed border-slate-300 hover:border-[#EA0029] transition-all whitespace-nowrap lg:mt-1" title="새 개인/시트 추가">
+          <!-- 새 팀원/시트 추가 버튼 (PC에서는 팀원 목록 아래에 전체 너비로 배치) -->
+          <button id="addSheetBtn" type="button" class="flex-shrink-0 lg:w-full flex items-center justify-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2.5 lg:py-3 rounded-xl text-xs font-bold text-slate-600 hover:text-[#EA0029] bg-slate-50 hover:bg-rose-50 border border-dashed border-slate-300 hover:border-[#EA0029] transition-all whitespace-nowrap lg:mt-1 shadow-2xs" title="새 개인/시트 추가">
             <svg class="w-4 h-4 text-[#EA0029]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
             <span class="hidden sm:inline lg:inline">시트 추가</span>
           </button>
