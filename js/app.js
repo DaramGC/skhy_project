@@ -639,6 +639,7 @@
 
     const newTask = {
       id: elements.taskIdInput.value || ("task-" + Date.now()),
+      sheet_name: sheet.sheetName,
       start_time: elements.startTimeInput.value,
       end_time: elements.endTimeInput.value,
       task: elements.taskNameInput.value.trim(),
@@ -715,6 +716,7 @@
 
     const newTask = {
       id: "task-" + Date.now(),
+      sheet_name: sheet.sheetName,
       start_time: "09:00",
       end_time: "10:00",
       task: "",
