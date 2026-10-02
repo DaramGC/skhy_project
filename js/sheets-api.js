@@ -1,13 +1,13 @@
 /**
  * SKHY Timetable Studio - Google Apps Script & Google Sheets API 모듈
- * [신규 포맷]: 단일 시트에 sheet_name 열을 기반으로 개인별 일정 관리 및 timetable_fixed 저장 지원
+ * [신규 포맷]: 단일 시트에 sheet_name 열을 기반으로 개인별(A_담당, B_팀장, C_파트장) 일정 관리 및 timetable_fixed 저장 지원
  */
 
 const SheetsApi = (function () {
   const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxd5c5sHok_UUWu-_pLsvQ0VBxSjPdIrM0tqXKoZ5vcgIZcLHNNXTFUdQF34abiynSfvA/exec";
   const SOURCE_SPREADSHEET_ID = "1rRunNn1fnbEjfLgh7FFwphGVwmdvCQY-Fd1wvmlnzdc";
   const GAS_URL_KEY = "skhy_gas_web_app_url";
-  const LOCAL_CACHE_KEY = "skhy_timetable_cache_v2";
+  const LOCAL_CACHE_KEY = "skhy_timetable_cache_v3"; // v3: 이전 'Main'/'시트1' 단일 탭 캐시 자동 무효화
 
   /**
    * 저장된 Google Apps Script Web App URL 반환
@@ -37,6 +37,7 @@ const SheetsApi = (function () {
 
   /**
    * 로컬 캐시에서 데이터 가져오기
+   * - 캐시에 'Main', '시트1' 등 잘못된 단일 탭이 들어있다면 무시하고 최신 Mock(A_담당, B_팀장, C_파트장) 사용
    */
   function getLocalData() {
     try {
@@ -44,7 +45,12 @@ const SheetsApi = (function () {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && Array.isArray(parsed.sheets) && parsed.sheets.length > 0) {
-          return parsed;
+          const hasInvalidSheetName = parsed.sheets.some(
+            s => s.sheetName === "Main" || s.sheetName === "시트1" || s.sheetName === "Sheet1" || s.sheetName === "timetable"
+          );
+          if (!hasInvalidSheetName) {
+            return parsed;
+          }
         }
       }
     } catch (e) {
@@ -85,7 +91,7 @@ const SheetsApi = (function () {
 
   /**
    * Google Visualization API (JSONP)를 활용하여 원본 시트에서 실시간 직접 읽기
-   * - Apps Script 미배포 상태이거나 단일 탭 구버전 응답 시에도 sheet_name 열을 즉시 정상 분리
+   * - Apps Script 배포 상태와 무관하게 sheet_name 열을 직접 읽어 팀원별(A_담당, B_팀장, C_파트장)로 즉시 분할
    */
   function fetchDirectFromGoogleSheet() {
     return new Promise((resolve, reject) => {
@@ -129,6 +135,10 @@ const SheetsApi = (function () {
             if (!c[sheetNameIdx] && !c[taskIdx]) return;
 
             const personName = c[sheetNameIdx] ? String(c[sheetNameIdx].v || "").trim() : "미지정";
+            if (!personName || personName === "Main" || personName === "시트1" || personName === "Sheet1") {
+              return;
+            }
+
             if (!memberMap[personName]) {
               memberMap[personName] = {
                 sheetName: personName,
@@ -157,6 +167,10 @@ const SheetsApi = (function () {
             });
           });
 
+          if (memberOrder.length === 0) {
+            throw new Error("sheet_name으로 분류된 팀원 데이터가 없습니다.");
+          }
+
           const sheets = memberOrder.map(name => memberMap[name]);
           resolve(sheets);
         } catch (e) {
@@ -174,15 +188,91 @@ const SheetsApi = (function () {
   }
 
   /**
+   * GAS에서 넘어온 원시 시트 목록 검증 및 재그룹화
+   */
+  function regroupRawSheets(rawSheets) {
+    if (!Array.isArray(rawSheets) || rawSheets.length === 0) return null;
+
+    // 1. 이미 복수 팀원으로 분할되어 있고 탭 이름(Main, 시트1 등)이 아닌 경우
+    const isGenericTabOnly = rawSheets.length === 1 && (
+      rawSheets[0].sheetName === "Main" || rawSheets[0].sheetName === "시트1" || 
+      rawSheets[0].sheetName === "Sheet1" || rawSheets[0].sheetName === "timetable"
+    );
+
+    if (!isGenericTabOnly && rawSheets.length > 0) {
+      return rawSheets.map(s => ({
+        sheetName: s.sheetName,
+        status: s.status || "draft",
+        updatedAt: s.updatedAt || new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
+        data: (s.data || []).map(item => ({
+          ...item,
+          sheet_name: item.sheet_name || s.sheetName,
+          start_time: formatTimeStr(item.start_time),
+          end_time: formatTimeStr(item.end_time),
+          category: item.category || guessCategory(item.task, item.summary)
+        }))
+      }));
+    }
+
+    // 2. 단일 시트('Main')로 넘어왔으나 task 내부에 sheet_name 속성이 있는 경우
+    const memberMap = {};
+    const memberOrder = [];
+
+    rawSheets.forEach(s => {
+      (s.data || []).forEach(item => {
+        const pName = (item.sheet_name || "").trim();
+        if (!pName || pName === "Main" || pName === "시트1" || pName === "Sheet1") return;
+
+        if (!memberMap[pName]) {
+          memberMap[pName] = {
+            sheetName: pName,
+            status: s.status || "draft",
+            updatedAt: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
+            data: []
+          };
+          memberOrder.push(pName);
+        }
+
+        memberMap[pName].data.push({
+          ...item,
+          sheet_name: pName,
+          start_time: formatTimeStr(item.start_time),
+          end_time: formatTimeStr(item.end_time),
+          category: item.category || guessCategory(item.task, item.summary)
+        });
+      });
+    });
+
+    if (memberOrder.length > 0) {
+      return memberOrder.map(name => memberMap[name]);
+    }
+
+    return null; // 분할 실패 -> fetchDirectFromGoogleSheet로 fallback
+  }
+
+  /**
    * 원본 timetable 시트에서 데이터 불러오기
+   * - 1순위: 원본 시트에서 sheet_name 열 기반 실시간 직접 조회 (가장 빠르고 정확)
+   * - 2순위: Google Apps Script Web App 조회
+   * - 3순위: 로컬 캐시 / Mock 데이터
    */
   async function fetchSheetsData(timeoutMs = 6000) {
-    const gasUrl = getGasUrl();
     let sheets = null;
     let fetchError = null;
 
-    // 1단계: Google Apps Script Web App 호출 시도
-    if (gasUrl) {
+    // 1단계: 원본 구글 시트에서 sheet_name 열 기반으로 실시간 직접 파싱 (100% 최신 데이터)
+    try {
+      const directSheets = await fetchDirectFromGoogleSheet();
+      if (directSheets && directSheets.length > 0) {
+        sheets = directSheets;
+      }
+    } catch (directErr) {
+      console.warn("[SheetsApi] 구글 시트 gviz 직접 파싱 fallback:", directErr);
+    }
+
+    // 2단계: 직접 파싱이 실패한 경우 Google Apps Script Web App 호출 시도
+    const gasUrl = getGasUrl();
+    if ((!sheets || sheets.length === 0) && gasUrl) {
       const controller = new AbortController();
       const timeoutTimer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -197,39 +287,15 @@ const SheetsApi = (function () {
         if (response.ok) {
           const resJson = await response.json();
           if (resJson.success && Array.isArray(resJson.sheets) && resJson.sheets.length > 0) {
-            // 서버가 아직 구버전 Code.gs로 배포되어 '시트1' 단일 탭으로 통째 반환하는 경우 체크
-            const isLegacySingleTab = resJson.sheets.length === 1 && (resJson.sheets[0].sheetName === "시트1" || resJson.sheets[0].sheetName === "Sheet1");
-            if (!isLegacySingleTab) {
-              sheets = resJson.sheets.map(s => ({
-                sheetName: s.sheetName,
-                status: s.status || "draft",
-                updatedAt: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
-                data: (s.data || []).map(item => ({
-                  ...item,
-                  sheet_name: item.sheet_name || s.sheetName,
-                  start_time: formatTimeStr(item.start_time),
-                  end_time: formatTimeStr(item.end_time),
-                  category: item.category || guessCategory(item.task, item.summary)
-                }))
-              }));
+            const parsedSheets = regroupRawSheets(resJson.sheets);
+            if (parsedSheets && parsedSheets.length > 0) {
+              sheets = parsedSheets;
             }
           }
         }
       } catch (err) {
         clearTimeout(timeoutTimer);
         fetchError = err;
-      }
-    }
-
-    // 2단계: GAS 응답이 없거나 구버전 단일 탭인 경우 원본 시트에서 실시간 직접 파싱
-    if (!sheets || sheets.length === 0) {
-      try {
-        const directSheets = await fetchDirectFromGoogleSheet();
-        if (directSheets && directSheets.length > 0) {
-          sheets = directSheets;
-        }
-      } catch (directErr) {
-        console.warn("[SheetsApi] 구글 시트 gviz 직접 파싱 fallback 실패:", directErr);
       }
     }
 
